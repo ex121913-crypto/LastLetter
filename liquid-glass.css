@@ -1,0 +1,871 @@
+/* ============================================================
+   LIQUID GLASS THEME — Apple macOS 26 / iOS 26
+   Animated orb buttons + prismatic loader + frosted glass
+   ============================================================ */
+
+/* ==== FULL 12-CIRCLE UIVERSE KEYFRAMES ==== */
+@keyframes lqC1 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(0px, 16px) translateZ(0); }
+  66%  { transform: translate(12px, 64px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC2 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(80px, -10px) translateZ(0); }
+  66%  { transform: translate(72px, -48px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC3 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(20px, 12px) translateZ(0); }
+  66%  { transform: translate(12px, 4px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC4 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(76px, -12px) translateZ(0); }
+  66%  { transform: translate(112px, -8px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC5 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(84px, 28px) translateZ(0); }
+  66%  { transform: translate(40px, -32px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC6 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(28px, -16px) translateZ(0); }
+  66%  { transform: translate(76px, -56px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC7 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(8px, 28px) translateZ(0); }
+  66%  { transform: translate(20px, -60px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC8 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(32px, -4px) translateZ(0); }
+  66%  { transform: translate(56px, -20px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC9 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(20px, -12px) translateZ(0); }
+  66%  { transform: translate(80px, -8px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC10 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(68px, 20px) translateZ(0); }
+  66%  { transform: translate(100px, 28px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC11 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(4px, 4px) translateZ(0); }
+  66%  { transform: translate(68px, 20px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+@keyframes lqC12 {
+  0%   { transform: translate(0, 0) translateZ(0); }
+  33%  { transform: translate(56px, 0px) translateZ(0); }
+  66%  { transform: translate(60px, -32px) translateZ(0); }
+  100% { transform: translate(0, 0) translateZ(0); }
+}
+
+/* Hover acceleration — matches UIverse: 7s -> 1400ms on hover */
+[data-theme="liquid"] *:hover > .lq-orb-layer .lq-circle {
+  --lq-duration: 1400ms !important;
+  animation-duration: 1400ms !important;
+}
+
+/* ==== LETTER WAVE ANIMATION ==== */
+.lq-letter {
+  display: inline-block;
+  opacity: 0.4;
+  transform: translateY(0);
+  animation: lqLetterWave 2.2s infinite;
+  z-index: 1;
+}
+@keyframes lqLetterWave {
+  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); }
+  20%      { opacity: 1;   transform: scale(1.15); }
+  40%      { opacity: 0.7; transform: translateY(0) scale(1); }
+}
+
+/* ==== LOADER SPINNER — prismatic rotating ring ==== */
+[data-theme="liquid"] .loading-msg {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  min-height: 160px;
+  font-weight: 300;
+  color: white;
+  border-radius: 50%;
+}
+[data-theme="liquid"] .loading-msg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: lqLoaderSpin 2s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+@keyframes lqLoaderSpin {
+  0% {
+    transform: rotate(90deg);
+    box-shadow: 0 10px 20px 0 #fff inset, 0 20px 30px 0 #ad5fff inset, 0 60px 60px 0 #471eec inset;
+  }
+  50% {
+    transform: rotate(270deg);
+    box-shadow: 0 10px 20px 0 #fff inset, 0 20px 10px 0 #d60a47 inset, 0 40px 60px 0 #311e80 inset;
+  }
+  100% {
+    transform: rotate(450deg);
+    box-shadow: 0 10px 20px 0 #fff inset, 0 20px 30px 0 #ad5fff inset, 0 60px 60px 0 #471eec inset;
+  }
+}
+[data-theme="liquid"] .loading-msg.done::before {
+  animation: none;
+  box-shadow: none;
+}
+[data-theme="liquid"] .loading-msg.done {
+  min-width: unset; min-height: unset; border-radius: 0;
+  color: rgba(142,230,160,0.7);
+}
+
+/* ---- THEME VARIABLES ---- */
+[data-theme="liquid"] {
+  --bg: #050507;
+  --surface: rgba(255,255,255,0.05);
+  --surface-alt: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.08);
+  --border-lt: rgba(255,255,255,0.05);
+  --ink: #f0f0f2;
+  --ink2: rgba(255,255,255,0.5);
+  --ink3: rgba(255,255,255,0.25);
+  --accent: rgba(255,255,255,0.85);
+  --accent-lt: rgba(255,255,255,0.05);
+  --correct: #8ee6a0;
+  --correct-lt: rgba(142,230,160,0.07);
+  --wrong: #f07070;
+  --wrong-lt: rgba(240,112,112,0.07);
+  --warn: #f0c850;
+  --bot-blue: #80c0f0;
+  --bot-blue-lt: rgba(128,192,240,0.07);
+  --serif: 'Inter',-apple-system,sans-serif;
+  --sans: 'Inter',-apple-system,sans-serif;
+  --glass-shadow:
+    0 0 0 0.5px rgba(255,255,255,0.1),
+    0 8px 32px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  --glass-shadow-h:
+    0 0 0 0.5px rgba(255,255,255,0.15),
+    0 12px 44px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* ---- BACKGROUND ORBS ---- */
+[data-theme="liquid"] .liquid-bg { display: block !important; }
+.liquid-bg { display: none; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+
+.liquid-bg .orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(90px); opacity: 0.3; will-change: transform;
+}
+.liquid-bg .orb-1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(173,95,255,0.5), transparent 70%);
+  top: -8%; left: -5%;
+  animation: od1 20s ease-in-out infinite alternate;
+}
+.liquid-bg .orb-2 {
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(26,35,255,0.4), transparent 70%);
+  top: 55%; right: -8%;
+  animation: od2 24s ease-in-out infinite alternate;
+}
+.liquid-bg .orb-3 {
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(226,27,218,0.35), transparent 70%);
+  bottom: -5%; left: 25%;
+  animation: od3 22s ease-in-out infinite alternate;
+}
+.liquid-bg .orb-4 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(255,210,21,0.25), transparent 70%);
+  top: 25%; left: 55%;
+  animation: od4 26s ease-in-out infinite alternate;
+}
+@keyframes od1 { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(80px,60px) scale(1.15)} 100%{transform:translate(-30px,120px) scale(.95)} }
+@keyframes od2 { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(-100px,-40px) scale(1.1)} 100%{transform:translate(-60px,80px) scale(.9)} }
+@keyframes od3 { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-80px) scale(1.2)} 100%{transform:translate(-40px,-40px) scale(1)} }
+@keyframes od4 { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(-80px,40px) scale(1.1)} 100%{transform:translate(40px,-60px) scale(.95)} }
+
+/* ---- GLASS PANEL + PRISMATIC BORDER ---- */
+[data-theme="liquid"] .glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(40px) saturate(1.4) brightness(1.05);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4) brightness(1.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+[data-theme="liquid"] .glass::before {
+  content: ''; position: absolute; inset: -1px;
+  border-radius: inherit; padding: 1px;
+  background: linear-gradient(135deg,
+    rgba(255,163,26,0.25) 0%, rgba(226,27,218,0.2) 25%,
+    rgba(26,35,255,0.25) 50%, rgba(255,232,26,0.2) 75%,
+    rgba(255,163,26,0.2) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none; z-index: 1; opacity: 0.5;
+  transition: opacity 0.4s ease;
+}
+[data-theme="liquid"] .glass:hover::before { opacity: 1; }
+
+/* ---- GLASS BAR ---- */
+[data-theme="liquid"] .glass-bar {
+  background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+[data-theme="liquid"] .glass-icon {
+  background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.35);
+}
+[data-theme="liquid"] .glass-icon:hover {
+  background: rgba(255,255,255,0.08); color: #fff;
+}
+
+/* ---- MENU ---- */
+[data-theme="liquid"] .menu-logo {
+  font-family: 'Inter',-apple-system,sans-serif;
+  font-weight: 800; letter-spacing: -2px;
+  background: linear-gradient(135deg, #fff, rgba(255,255,255,0.65));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="liquid"] .menu-rule {
+  background: linear-gradient(90deg,
+    rgba(255,163,26,0.5), rgba(226,27,218,0.4),
+    rgba(26,35,255,0.5), rgba(255,232,26,0.4));
+  height: 2px; width: 60px;
+}
+[data-theme="liquid"] .menu-eyebrow { color: rgba(255,255,255,0.25); letter-spacing: 4px; }
+
+/* ==== MENU BUTTONS — LIQUID GLASS STYLE ==== */
+[data-theme="liquid"] .menu-btn {
+  background: rgba(255, 255, 255, 0.01);
+  border: none;
+  position: relative; overflow: hidden;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+/* Liquid Glass Inset Glow */
+[data-theme="liquid"] .menu-btn::before {
+  content: ''; pointer-events: none;
+  position: absolute; z-index: 3; inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 20px -5px rgba(255, 255, 255, 0.07);
+}
+[data-theme="liquid"] .menu-btn .mi,
+[data-theme="liquid"] .menu-btn .mt { position: relative; z-index: 2; }
+
+/* HOVER: Scale up, authentic glass highlight */
+[data-theme="liquid"] .menu-btn:hover {
+  transform: scale(1.04) !important;
+  background: rgba(255, 255, 255, 0.015);
+  box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ==== SETTINGS DROPDOWN OPTIONS ==== */
+[data-theme="liquid"] .sg select option {
+  background: #050507;
+  color: #aaa;
+}
+
+/* ==== GENERIC PRIMARY BUTTONS (e.g. Save & Close) ==== */
+[data-theme="liquid"] .btn-primary:not(.uiverse) {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s;
+}
+[data-theme="liquid"] .btn-primary:not(.uiverse):hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ==== UIVERSE START/REPLAY BUTTON ==== */
+.uiverse {
+  --duration: 7s;
+  --easing: linear;
+  --c-color-1: rgba(255, 163, 26, 0.7);
+  --c-color-2: #1a23ff;
+  --c-color-3: #e21bda;
+  --c-color-4: rgba(255, 232, 26, 0.7);
+  --c-shadow: rgba(255, 223, 87, 0.42);
+  --c-shadow-inset-top: rgba(255, 223, 52, 0.76);
+  --c-shadow-inset-bottom: rgba(255, 250, 215, 0.68);
+  --c-radial-inner: #ffd215;
+  --c-radial-outer: #fff172;
+  --c-color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  outline: none;
+  position: relative;
+  cursor: pointer;
+  border: none;
+  display: table;
+  border-radius: 24px;
+  padding: 0;
+  text-align: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 14px; /* Matches the purple menu button (.btn-secondary) exactly */
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: var(--c-color);
+  background: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.15)), radial-gradient(
+    circle,
+    var(--c-radial-inner),
+    var(--c-radial-outer) 80%
+  );
+  box-shadow: 0 0 14px var(--c-shadow);
+}
+
+#btn-start-solo,
+#btn-start-endless,
+#btn-start-chain,
+#btn-start-typing {
+  zoom: 0.85; /* Scales visually AND updates the layout box to fix alignment */
+}
+#btn-start-solo span,
+#btn-start-endless span,
+#btn-start-chain span,
+#btn-start-typing span {
+  font-size: 16.5px; /* 16.5px * 0.85 = ~14px (matches purple menu button text) */
+}
+
+.uiverse:before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24px;
+  box-shadow:
+    inset 0 3px 12px var(--c-shadow-inset-top),
+    inset 0 -3px 4px var(--c-shadow-inset-bottom);
+}
+
+.uiverse .wrapper {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  overflow: hidden;
+  border-radius: 24px;
+  min-width: 132px;
+  padding: 12px 0;
+}
+
+.uiverse .wrapper span {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+}
+
+.uiverse:hover {
+  --duration: 1400ms;
+}
+
+.uiverse .wrapper .circle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  filter: blur(var(--blur, 8px)) brightness(0.85);
+  background: var(--background, transparent);
+  transform: translate(var(--x, 0), var(--y, 0)) translateZ(0);
+  animation: var(--animation, none) var(--duration) var(--easing) infinite;
+}
+
+/* ==== RESTRICT UIVERSE TO LIQUID GLASS THEME ONLY ==== */
+/* If the theme is not liquid, strip out the fancy animations and make them look like normal .btn-primary */
+:root:not([data-theme="liquid"]) .uiverse {
+  width: 100%;
+  padding: 14px 0 !important;
+  background: var(--accent) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: calc(var(--radius) * 0.8) !important;
+  font-family: var(--serif) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  box-shadow: 0 4px 12px var(--accent-shadow) !important;
+  zoom: 1 !important; 
+  display: block !important;
+}
+:root:not([data-theme="liquid"]) .uiverse:hover {
+  filter: brightness(1.1) !important;
+  transform: translateY(-2px) !important;
+}
+:root:not([data-theme="liquid"]) .uiverse .circle,
+:root:not([data-theme="liquid"]) .uiverse::before {
+  display: none !important;
+}
+:root:not([data-theme="liquid"]) .uiverse .wrapper {
+  padding: 0 !important;
+  -webkit-mask-image: none !important;
+  display: block !important;
+}
+:root:not([data-theme="liquid"]) .uiverse span {
+  font-size: inherit !important;
+  font-family: inherit !important;
+}
+
+.uiverse .wrapper .circle.circle-1,
+.uiverse .wrapper .circle.circle-9,
+.uiverse .wrapper .circle.circle-10 {
+  --background: var(--c-color-4);
+}
+
+.uiverse .wrapper .circle.circle-3,
+.uiverse .wrapper .circle.circle-4 {
+  --background: var(--c-color-2);
+  --blur: 14px;
+}
+
+.uiverse .wrapper .circle.circle-5,
+.uiverse .wrapper .circle.circle-6 {
+  --background: var(--c-color-3);
+  --blur: 16px;
+}
+
+.uiverse .wrapper .circle.circle-2,
+.uiverse .wrapper .circle.circle-7,
+.uiverse .wrapper .circle.circle-8,
+.uiverse .wrapper .circle.circle-11,
+.uiverse .wrapper .circle.circle-12 {
+  --background: var(--c-color-1);
+  --blur: 12px;
+}
+
+.uiverse .wrapper .circle.circle-1 {
+  --x: 0;
+  --y: -40px;
+  --animation: circle-1;
+}
+
+.uiverse .wrapper .circle.circle-2 {
+  --x: 92px;
+  --y: 8px;
+  --animation: circle-2;
+}
+
+.uiverse .wrapper .circle.circle-3 {
+  --x: -12px;
+  --y: -12px;
+  --animation: circle-3;
+}
+
+.uiverse .wrapper .circle.circle-4 {
+  --x: 80px;
+  --y: -12px;
+  --animation: circle-4;
+}
+
+.uiverse .wrapper .circle.circle-5 {
+  --x: 12px;
+  --y: -4px;
+  --animation: circle-5;
+}
+
+.uiverse .wrapper .circle.circle-6 {
+  --x: 56px;
+  --y: 16px;
+  --animation: circle-6;
+}
+
+.uiverse .wrapper .circle.circle-7 {
+  --x: 8px;
+  --y: 28px;
+  --animation: circle-7;
+}
+
+.uiverse .wrapper .circle.circle-8 {
+  --x: 28px;
+  --y: -4px;
+  --animation: circle-8;
+}
+
+.uiverse .wrapper .circle.circle-9 {
+  --x: 20px;
+  --y: -12px;
+  --animation: circle-9;
+}
+
+.uiverse .wrapper .circle.circle-10 {
+  --x: 64px;
+  --y: 16px;
+  --animation: circle-10;
+}
+
+.uiverse .wrapper .circle.circle-11 {
+  --x: 4px;
+  --y: 4px;
+  --animation: circle-11;
+}
+
+.uiverse .wrapper .circle.circle-12 {
+  --blur: 14px;
+  --x: 52px;
+  --y: 4px;
+  --animation: circle-12;
+}
+
+@keyframes circle-1 {
+  33% { transform: translate(0px, 16px) translateZ(0); }
+  66% { transform: translate(12px, 64px) translateZ(0); }
+}
+
+@keyframes circle-2 {
+  33% { transform: translate(80px, -10px) translateZ(0); }
+  66% { transform: translate(72px, -48px) translateZ(0); }
+}
+
+@keyframes circle-3 {
+  33% { transform: translate(20px, 12px) translateZ(0); }
+  66% { transform: translate(12px, 4px) translateZ(0); }
+}
+
+@keyframes circle-4 {
+  33% { transform: translate(76px, -12px) translateZ(0); }
+  66% { transform: translate(112px, -8px) translateZ(0); }
+}
+
+@keyframes circle-5 {
+  33% { transform: translate(84px, 28px) translateZ(0); }
+  66% { transform: translate(40px, -32px) translateZ(0); }
+}
+
+@keyframes circle-6 {
+  33% { transform: translate(28px, -16px) translateZ(0); }
+  66% { transform: translate(76px, -56px) translateZ(0); }
+}
+
+@keyframes circle-7 {
+  33% { transform: translate(8px, 28px) translateZ(0); }
+  66% { transform: translate(20px, -60px) translateZ(0); }
+}
+
+@keyframes circle-8 {
+  33% { transform: translate(32px, -4px) translateZ(0); }
+  66% { transform: translate(56px, -20px) translateZ(0); }
+}
+
+@keyframes circle-9 {
+  33% { transform: translate(20px, -12px) translateZ(0); }
+  66% { transform: translate(80px, -8px) translateZ(0); }
+}
+
+@keyframes circle-10 {
+  33% { transform: translate(68px, 20px) translateZ(0); }
+  66% { transform: translate(100px, 28px) translateZ(0); }
+}
+
+@keyframes circle-11 {
+  33% { transform: translate(4px, 4px) translateZ(0); }
+  66% { transform: translate(68px, 20px) translateZ(0); }
+}
+
+@keyframes circle-12 {
+  33% { transform: translate(56px, 0px) translateZ(0); }
+  66% { transform: translate(60px, -32px) translateZ(0); }
+}
+
+/* ==== SECONDARY BUTTON — PURPLE UIVERSE STYLE ==== */
+[data-theme="liquid"] .btn-secondary {
+  background: radial-gradient(circle, rgba(120,50,200,0.2), rgba(160,100,255,0.1) 80%);
+  border: none; color: #fff;
+  box-shadow: 0 0 10px rgba(173,95,255,0.2);
+  position: relative; overflow: hidden;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+[data-theme="liquid"] .btn-secondary::before {
+  content: ''; pointer-events: none;
+  position: absolute; z-index: 3; inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 3px 10px rgba(200,160,255,0.35), inset 0 -3px 4px rgba(230,210,255,0.2);
+}
+[data-theme="liquid"] .btn-secondary:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 22px rgba(173,95,255,0.35);
+}
+[data-theme="liquid"] .btn-secondary:hover .lq-circle {
+  animation-duration: 1400ms !important;
+}
+
+/* ==== LOADING TEXT — LETTER ANIMATION ==== */
+[data-theme="liquid"] .loading-msg {
+  position: relative; display: inline-flex; align-items: center;
+  justify-content: center; font-weight: 300; color: rgba(255,255,255,0.5);
+}
+[data-theme="liquid"] .loading-msg.done { color: rgba(142,230,160,0.7); }
+
+/* ---- SETTINGS ---- */
+[data-theme="liquid"] .sg select {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06);
+  color: var(--ink);
+}
+[data-theme="liquid"] .sg select:focus {
+  border-color: rgba(173,95,255,0.4);
+  box-shadow: 0 0 10px rgba(173,95,255,0.1);
+}
+
+/* ---- DIFF/WS BUTTONS ---- */
+[data-theme="liquid"] .diff-btn {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);
+  position: relative; overflow: hidden;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+[data-theme="liquid"] .diff-btn::before {
+  content: ''; pointer-events: none;
+  position: absolute; z-index: 3; inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+[data-theme="liquid"] .diff-btn:hover {
+  border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.05);
+}
+/* SELECTED DIFF BUTTON: Purple UIverse Style */
+[data-theme="liquid"] .diff-btn.selected {
+  background: radial-gradient(circle, rgba(120,50,200,0.25), rgba(160,100,255,0.15) 80%);
+  border-color: transparent;
+  box-shadow: 0 0 18px rgba(173,95,255,0.3);
+  transform: scale(1.02);
+}
+[data-theme="liquid"] .diff-btn.selected::before {
+  box-shadow: inset 0 3px 10px rgba(200,160,255,0.4), inset 0 -3px 4px rgba(230,210,255,0.25);
+}
+[data-theme="liquid"] .diff-btn.selected .lq-circle {
+  opacity: 1; /* Show orbs only when selected */
+}
+[data-theme="liquid"] .diff-btn:not(.selected) .lq-orb-layer {
+  opacity: 0; /* Hide orbs when not selected */
+}
+[data-theme="liquid"] .diff-btn strong, [data-theme="liquid"] .diff-btn small { position: relative; z-index: 2; }
+[data-theme="liquid"] .diff-btn.selected:hover {
+  box-shadow: 0 0 24px rgba(173,95,255,0.4);
+}
+[data-theme="liquid"] .diff-btn.selected:hover .lq-circle {
+  animation-duration: 1400ms !important;
+}
+
+/* ---- BOT CARDS ---- */
+[data-theme="liquid"] .bot-card {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);
+}
+[data-theme="liquid"] .bot-card:hover {
+  border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.05);
+  box-shadow: 0 0 16px rgba(173,95,255,0.06); transform: translateY(-3px);
+}
+[data-theme="liquid"] .bot-badge.easy   { background: rgba(142,230,160,0.1); color: #8ee6a0; }
+[data-theme="liquid"] .bot-badge.medium { background: rgba(240,200,80,0.1);  color: #f0c850; }
+[data-theme="liquid"] .bot-badge.hard   { background: rgba(240,112,112,0.1); color: #f07070; }
+[data-theme="liquid"] .bot-badge.extreme{ background: rgba(173,95,255,0.12); color: #ad5fff; }
+
+/* ---- LEARN CARDS ---- */
+[data-theme="liquid"] .learn-card {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);
+}
+[data-theme="liquid"] .learn-card:hover,
+[data-theme="liquid"] .learn-card.active-card {
+  border-color: rgba(173,95,255,0.3); background: rgba(173,95,255,0.05);
+}
+
+/* ---- HISTORY ---- */
+[data-theme="liquid"] .history-item:hover { background: rgba(255,255,255,0.03); }
+[data-theme="liquid"] .hd-summary { background: rgba(255,255,255,0.03); }
+[data-theme="liquid"] .hd-word-item strong { color: rgba(255,255,255,0.8); }
+
+/* ---- GAME HUD ---- */
+[data-theme="liquid"] .game-header { border-bottom-color: rgba(255,255,255,0.05); }
+[data-theme="liquid"] .timer-fill { stroke: rgba(255,255,255,0.7); }
+[data-theme="liquid"] .timer-fill.warning { stroke: var(--warn); }
+[data-theme="liquid"] .timer-fill.danger  { stroke: var(--wrong); }
+[data-theme="liquid"] .timer-track { stroke: rgba(255,255,255,0.05); }
+
+/* ---- CHAIN WORDS ---- */
+[data-theme="liquid"] .chain-word.player { background: rgba(142,230,160,0.05); border-left-color: rgba(142,230,160,0.4); }
+[data-theme="liquid"] .chain-word.bot    { background: rgba(128,192,240,0.05); border-left-color: rgba(128,192,240,0.4); }
+[data-theme="liquid"] .chain-word.skip   { background: rgba(240,112,112,0.04); border-left-color: rgba(240,112,112,0.3); }
+[data-theme="liquid"] .cw-highlight { color: rgba(255,255,255,0.9); }
+[data-theme="liquid"] .cw-bot-hl    { color: rgba(128,192,240,0.8); }
+
+/* ---- WORD DISPLAY ---- */
+[data-theme="liquid"] .wd-prefix { color: rgba(255,255,255,0.9); text-shadow: 0 0 18px rgba(173,95,255,0.2); }
+[data-theme="liquid"] .wd-cursor { color: rgba(173,95,255,0.5); }
+[data-theme="liquid"] .typing-area { border-top-color: rgba(255,255,255,0.05); }
+[data-theme="liquid"] .try-dot { border-color: rgba(255,255,255,0.12); }
+[data-theme="liquid"] .try-dot.filled { background: #fff; border-color: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.25); }
+
+/* ---- TURN BANNER ---- */
+[data-theme="liquid"] .turn-banner.yours  { background: rgba(142,230,160,0.07); color: #8ee6a0; }
+[data-theme="liquid"] .turn-banner.theirs { background: rgba(128,192,240,0.07); color: #80c0f0; }
+
+/* ---- SIDEBAR ---- */
+[data-theme="liquid"] .sb-sort select { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] .cand-word:hover { background: rgba(255,255,255,0.04); }
+[data-theme="liquid"] .def-entry { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); }
+[data-theme="liquid"] .def-entry-pos { color: rgba(173,95,255,0.5); }
+[data-theme="liquid"] .sb-count { background: rgba(173,95,255,0.1); color: rgba(173,95,255,0.7); }
+
+/* ---- TYPING PRACTICE ---- */
+[data-theme="liquid"] .typing-tp { color: rgba(173,95,255,0.45); }
+[data-theme="liquid"] .typing-input-display .tc { color: #8ee6a0; }
+[data-theme="liquid"] .typing-input-display .te { color: #f07070; }
+[data-theme="liquid"] .typing-input-display .tr { color: rgba(255,255,255,0.12); }
+[data-theme="liquid"] .smooth-cursor {
+  background: linear-gradient(180deg, rgba(173,95,255,0.8), rgba(26,35,255,0.7));
+  box-shadow: 0 0 10px rgba(173,95,255,0.3);
+}
+[data-theme="liquid"] .typing-history { background: rgba(255,255,255,0.02); }
+
+/* ---- TOOLTIP ---- */
+[data-theme="liquid"] .tooltip {
+  background: rgba(15,15,20,0.92); backdrop-filter: blur(30px);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 12px rgba(173,95,255,0.05);
+}
+[data-theme="liquid"] .tip-pos { color: rgba(173,95,255,0.45); }
+
+/* ---- GAME OVER ---- */
+[data-theme="liquid"] .go-score {
+  background: linear-gradient(135deg, #fff, rgba(173,95,255,0.6), rgba(26,35,255,0.6));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+[data-theme="liquid"] .go-stats { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+[data-theme="liquid"] .go-chain { background: rgba(255,255,255,0.02); }
+[data-theme="liquid"] .go-divider { background: rgba(255,255,255,0.06); }
+[data-theme="liquid"] .go-learned-item strong { color: rgba(255,255,255,0.75); }
+
+/* ---- MISC ---- */
+[data-theme="liquid"] .back-btn { color: rgba(255,255,255,0.35); }
+[data-theme="liquid"] .back-btn:hover { color: #fff; }
+[data-theme="liquid"] .life-pip { text-shadow: 0 0 8px rgba(255,80,120,0.25); }
+[data-theme="liquid"] #omega-new-trap { background: rgba(255,255,255,0.03)!important; border-color: rgba(255,255,255,0.06)!important; color: #fff!important; }
+[data-theme="liquid"] #omega-new-trap:focus { border-color: rgba(173,95,255,0.4)!important; }
+
+/* ---- SCROLLBAR ---- */
+[data-theme="liquid"] ::-webkit-scrollbar { width: 4px; }
+[data-theme="liquid"] ::-webkit-scrollbar-track { background: transparent; }
+[data-theme="liquid"] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+[data-theme="liquid"] ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+/* ===========================================================
+   GLOBAL TEXT COLOR OVERRIDE — force white on everything
+   Catches every element that might inherit dark text from
+   the light theme base stylesheet.
+   =========================================================== */
+[data-theme="liquid"] {
+  color: #f0f0f2;
+}
+[data-theme="liquid"] body,
+[data-theme="liquid"] h1,
+[data-theme="liquid"] h2,
+[data-theme="liquid"] h3,
+[data-theme="liquid"] h4,
+[data-theme="liquid"] h5,
+[data-theme="liquid"] h6,
+[data-theme="liquid"] p,
+[data-theme="liquid"] span,
+[data-theme="liquid"] div,
+[data-theme="liquid"] label,
+[data-theme="liquid"] small,
+[data-theme="liquid"] strong,
+[data-theme="liquid"] em,
+[data-theme="liquid"] a,
+[data-theme="liquid"] button,
+[data-theme="liquid"] input,
+[data-theme="liquid"] select,
+[data-theme="liquid"] option,
+[data-theme="liquid"] textarea {
+  color: inherit;
+}
+
+/* Specific overrides for elements with hardcoded dark colors */
+[data-theme="liquid"] .mt strong { color: #f0f0f2; }
+[data-theme="liquid"] .mt small { color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] .glass-title { color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] .glass-text-btn { color: rgba(255,255,255,0.35); }
+[data-theme="liquid"] .glass-text-btn:hover { color: #fff; }
+[data-theme="liquid"] .panel-desc { color: rgba(255,255,255,0.45); }
+[data-theme="liquid"] .muted { color: rgba(255,255,255,0.3); }
+[data-theme="liquid"] .sg label { color: rgba(255,255,255,0.45); }
+[data-theme="liquid"] .how-col h3 { color: rgba(255,255,255,0.8); }
+[data-theme="liquid"] .how-col p { color: rgba(255,255,255,0.45); }
+[data-theme="liquid"] .hs { color: rgba(255,255,255,0.45); }
+[data-theme="liquid"] .hn { border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.5); }
+[data-theme="liquid"] .diff-btn strong { color: #f0f0f2; }
+[data-theme="liquid"] .diff-btn small { color: rgba(255,255,255,0.35); }
+[data-theme="liquid"] .bot-name { color: #f0f0f2; }
+[data-theme="liquid"] .bot-desc { color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] .learn-card strong { color: #f0f0f2; }
+[data-theme="liquid"] .learn-card small { color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] .learn-opts h3 { color: rgba(255,255,255,0.7); }
+[data-theme="liquid"] .hi-mode { color: #f0f0f2; }
+[data-theme="liquid"] .hi-score { color: #f0f0f2; }
+[data-theme="liquid"] .hi-meta { color: rgba(255,255,255,0.3); }
+[data-theme="liquid"] .gh-label { color: rgba(255,255,255,0.3); }
+[data-theme="liquid"] .gh-val { color: #f0f0f2; }
+[data-theme="liquid"] .timer-text { color: #f0f0f2; }
+[data-theme="liquid"] .tries-label { color: rgba(255,255,255,0.3); }
+[data-theme="liquid"] .wd-typed { color: #f0f0f2; }
+[data-theme="liquid"] .cw-text { color: rgba(255,255,255,0.7); }
+[data-theme="liquid"] .cw-score { color: rgba(255,255,255,0.3); }
+[data-theme="liquid"] .go-score-label { color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] .go-stat-val { color: #f0f0f2; }
+[data-theme="liquid"] .go-stat-lbl { color: rgba(255,255,255,0.3); }
+[data-theme="liquid"] .go-chain { color: rgba(255,255,255,0.5); }
+[data-theme="liquid"] .go-chain .sep { color: rgba(255,255,255,0.2); }
+[data-theme="liquid"] .go-learned h3 { color: rgba(255,255,255,0.7); }
+[data-theme="liquid"] .go-learned-item { color: rgba(255,255,255,0.5); }
+[data-theme="liquid"] .def-entry-word { color: #f0f0f2; }
+[data-theme="liquid"] .def-entry-text { color: rgba(255,255,255,0.45); }
+[data-theme="liquid"] .def-entry-src { color: rgba(255,255,255,0.2); }
+[data-theme="liquid"] .tip-word { color: #f0f0f2; }
+[data-theme="liquid"] .tip-def { color: rgba(255,255,255,0.5); }
+[data-theme="liquid"] .typing-tw { color: rgba(255,255,255,0.35); }
+[data-theme="liquid"] .typing-td { color: rgba(255,255,255,0.45); }
+[data-theme="liquid"] .th-word { color: #f0f0f2; }
+[data-theme="liquid"] .th-wpm { color: rgba(255,255,255,0.3); }
+[data-theme="liquid"] .hd-word-item { color: rgba(255,255,255,0.5); }
+[data-theme="liquid"] .hd-word-item em { color: rgba(173,95,255,0.5); }
+[data-theme="liquid"] .sb-list { color: rgba(255,255,255,0.45); }
+[data-theme="liquid"] .input-feedback.error { color: #f07070; }
+[data-theme="liquid"] .input-feedback.success { color: #8ee6a0; }
+
+/* Settings section headings and text */
+[data-theme="liquid"] #screen-settings h3 { color: rgba(255,255,255,0.6); }
+[data-theme="liquid"] #screen-settings h4 { color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] #screen-settings .panel-desc { color: rgba(255,255,255,0.35); }
+[data-theme="liquid"] #btn-clear-history { color: #f07070 !important; }

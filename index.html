@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last Letter — A Word Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Libre+Franklin:wght@300;400;500;600;700;800&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="liquid-glass.css">
+</head>
+<body>
+
+<!-- Liquid Glass animated background orbs -->
+<div class="liquid-bg" id="liquid-bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+
+<!-- Floating definition tooltip -->
+<div id="tooltip" class="tooltip hidden"><div id="tip-word" class="tip-word"></div><div id="tip-pos" class="tip-pos"></div><div id="tip-def" class="tip-def"></div></div>
+
+<!-- ===== MAIN MENU ===== -->
+<div id="screen-menu" class="screen active">
+  <div class="glass menu-glass">
+    <div class="glass-bar"><span class="glass-title">Last Letter</span>
+      <div class="glass-bar-r"><button class="glass-text-btn" id="btn-history">History</button><button class="glass-icon" id="btn-settings-open" title="Settings">⚙</button></div>
+    </div>
+    <div class="glass-body menu-body">
+      <div class="menu-eyebrow">The Word Game</div>
+      <h1 class="menu-logo">Last<br>Letter</h1>
+      <div class="menu-rule"></div>
+      <nav class="menu-nav">
+        <button class="menu-btn" data-screen="screen-mode-solo"><span class="mi">✦</span><div class="mt"><strong>Solo</strong><small>Race the clock</small></div></button>
+        <button class="menu-btn" data-screen="screen-mode-vs"><span class="mi">⚔</span><div class="mt"><strong>Vs Bot</strong><small>Choose your opponent</small></div></button>
+        <button class="menu-btn" data-screen="screen-mode-learn"><span class="mi">📖</span><div class="mt"><strong>Learn</strong><small>Vocabulary builder</small></div></button>
+        <button class="menu-btn" data-screen="screen-mode-endless"><span class="mi">∞</span><div class="mt"><strong>Endless</strong><small>No lives, no timer</small></div></button>
+        <button class="menu-btn" data-screen="screen-how"><span class="mi">?</span><div class="mt"><strong>How to Play</strong><small>Rules & tips</small></div></button>
+      </nav>
+      <div id="dict-status" class="loading-msg">Loading dictionary…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOW TO PLAY ===== -->
+<div id="screen-how" class="screen"><div class="glass glass-md"><div class="glass-bar"><span class="glass-title">How to Play</span></div><div class="glass-body">
+  <button class="back-btn" data-screen="screen-menu">← Back</button>
+  <div class="how-cols"><div class="how-col"><h3>The Chain</h3><div class="how-steps">
+    <div class="hs"><span class="hn">1</span><span>Given a <strong>starting prefix</strong></span></div>
+    <div class="hs"><span class="hn">2</span><span>Type a word <strong>beginning</strong> with it</span></div>
+    <div class="hs"><span class="hn">3</span><span><strong>Last letters</strong> become new prefix</span></div>
+    <div class="hs"><span class="hn">4</span><span>Harder rounds use <strong>more letters</strong></span></div>
+  </div></div><div class="how-col"><h3>Scoring</h3><p>Longer words = more points. Rare letters (Q,Z,X,J) give bonus.</p><p><strong>3 lives, 5 tries</strong> per round.</p>
+  <h3 style="margin-top:12px">Bot Strategies</h3><p>Bots use suffix traps (-ness, -ly, -tion), letter traps (ending on X,Z,Q), and the hardest ones minimize your available options.</p></div></div>
+</div></div></div>
+
+<!-- ===== SETTINGS ===== -->
+<div id="screen-settings" class="screen"><div class="glass glass-md"><div class="glass-bar"><span class="glass-title">Settings</span></div><div class="glass-body">
+  <button class="back-btn" data-screen="screen-menu">← Back</button>
+  <div class="settings-grid">
+    <div class="sg"><label>Word Bank</label><select id="s-wordbank"><option value="full">Full (~370K)</option><option value="common">Common (~20K)</option><option value="sat">SAT Prep</option><option value="ielts">IELTS</option><option value="niche">Niche/Rare</option><option value="fallback">Offline (~800)</option></select></div>
+    <div class="sg"><label>Lives</label><select id="s-lives"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option><option value="99">∞</option></select></div>
+    <div class="sg"><label>Tries</label><select id="s-tries"><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option><option value="99">∞</option></select></div>
+    <div class="sg"><label>Candidates</label><select id="s-cand"><option value="off">Off</option><option value="count">Count</option><option value="on" selected>List</option></select></div>
+    <div class="sg"><label>Frame Radius</label><select id="s-radius"><option value="0">Sharp</option><option value="12">Subtle</option><option value="20" selected>Rounded</option><option value="32">Pill</option></select></div>
+    <div class="sg"><label>Theme</label><select id="s-theme"><option value="light" selected>Light</option><option value="dark">Dark</option><option value="liquid">Liquid Glass</option></select></div>
+    <div class="sg"><label>Frame Scale</label><select id="s-scale"><option value="1">100%</option><option value="1.15">115%</option><option value="1.3" selected>130%</option><option value="1.5">150%</option></select></div>
+    <div class="sg"><label>Blur Intensity</label><select id="s-blur"><option value="12">Subtle</option><option value="24" selected>Medium</option><option value="40">Heavy</option></select></div>
+  </div>
+  
+  <div style="margin-top:24px;border-top:1px solid var(--border-lt);padding-top:16px">
+    <h3 style="font-size:12px;font-weight:700;margin-bottom:8px">LLM Engine Configuration</h3>
+    <div class="panel-desc" style="font-size:11px;margin-bottom:12px">Configure the external AI used by Omega to generate ultra-hard words.</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="s-llm-key" placeholder="API Key (sk-...)" style="flex:2;padding:8px 12px;border-radius:6px;border:1px solid var(--border);font-family:var(--sans);background:var(--surface-alt);color:var(--ink)">
+      <input type="text" id="s-llm-model" placeholder="Model (e.g. GLM-5.1)" style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid var(--border);font-family:var(--sans);background:var(--surface-alt);color:var(--ink)">
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="s-llm-host" placeholder="API Host (e.g. https://cmkey.cn/v1)" style="flex:2;padding:8px 12px;border-radius:6px;border:1px solid var(--border);font-family:var(--sans);background:var(--surface-alt);color:var(--ink)">
+      <div style="flex:1; display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="s-llm-cors" style="cursor:pointer"> <label for="s-llm-cors" style="font-size:11px;cursor:pointer;color:var(--ink2)">Use CORS Proxy</label>
+      </div>
+    </div>
+  </div>
+  
+  <div style="margin-top:24px;border-top:1px solid var(--border-lt);padding-top:16px">
+    <h3 style="font-size:12px;font-weight:700;margin-bottom:8px">Ω Omega Neural Net Settings</h3>
+    <div class="panel-desc" style="font-size:11px;margin-bottom:12px">Omega automatically learns the exact suffix you use when you defeat it. You can also manually teach or remove traps below.</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input type="text" id="omega-new-trap" placeholder="e.g. 'tion' or 'ism'" style="flex:1;padding:8px 12px;border-radius:6px;border:1px solid var(--border);font-family:var(--sans);background:var(--surface-alt);color:var(--ink)">
+      <button id="btn-omega-add-trap" class="btn-secondary" style="padding:8px 16px">Add Trap</button>
+    </div>
+    <h4 style="font-size:11px;margin-bottom:8px;color:var(--ink2)">Learned Traps (Click to remove)</h4>
+    <div id="omega-trap-list" style="display:flex;gap:6px;flex-wrap:wrap;min-height:30px;margin-bottom:16px"></div>
+  </div>
+  
+  <button class="btn-primary" id="btn-save-settings" style="margin-top:4px">Save & Close</button>
+</div></div></div>
+
+<!-- ===== HISTORY ===== -->
+<div id="screen-history" class="screen"><div class="glass glass-md"><div class="glass-bar"><span class="glass-title">Game History</span></div><div class="glass-body">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px">
+    <button class="back-btn" data-screen="screen-menu" style="margin-bottom:0">← Back</button>
+    <button id="btn-clear-history" class="glass-text-btn" style="color:var(--wrong)">Clear History</button>
+  </div>
+  <div id="history-list" class="history-list"><p class="muted">No games yet.</p></div>
+</div></div></div>
+
+<!-- ===== HISTORY DETAIL ===== -->
+<div id="screen-hist-detail" class="screen"><div class="glass glass-md"><div class="glass-bar"><span class="glass-title">Game Detail</span></div><div class="glass-body">
+  <button class="back-btn" data-screen="screen-history">← Back</button>
+  <div id="hd-summary" class="hd-summary"></div>
+  <div id="hd-words" class="hd-words"></div>
+</div></div></div>
+
+
+
+<!-- ===== VS BOT ===== -->
+<div id="screen-mode-vs" class="screen"><div class="glass glass-md"><div class="glass-bar"><span class="glass-title">Choose Opponent</span></div><div class="glass-body">
+  <button class="back-btn" data-screen="screen-menu">← Back</button>
+  <div class="bot-grid" id="bot-grid"></div>
+</div></div></div>
+
+<!-- ===== LEARN HUB ===== -->
+<div id="screen-mode-learn" class="screen"><div class="glass glass-md"><div class="glass-bar"><span class="glass-title">Learn Mode</span></div><div class="glass-body">
+  <button class="back-btn" data-screen="screen-menu">← Back</button>
+  <p class="panel-desc">Build vocabulary while playing.</p>
+  <div class="learn-modes" id="learn-modes-grid">
+    <button class="learn-card" id="btn-learn-chain"><span class="lci">🔗</span><div><strong>Word Chain</strong><small>Definitions in sidebar</small></div></button>
+    <button class="learn-card" id="btn-learn-typing"><span class="lci">⌨</span><div><strong>Typing Practice</strong><small>Type words, track WPM</small></div></button>
+  </div>
+  <div id="learn-chain-start" class="learn-opts hidden">
+    <h3>Opponent</h3>
+    <div class="ws-grid">
+      <button class="diff-btn selected" data-chainmode="vs">Learn with Bots</button>
+      <button class="diff-btn" data-chainmode="solo">Solo</button>
+    </div>
+    <button class="uiverse" id="btn-start-chain" style="margin-top:12px">
+      <div class="wrapper">
+        <span>Start</span>
+        <div class="circle circle-12"></div>
+        <div class="circle circle-11"></div>
+        <div class="circle circle-10"></div>
+        <div class="circle circle-9"></div>
+        <div class="circle circle-8"></div>
+        <div class="circle circle-7"></div>
+        <div class="circle circle-6"></div>
+        <div class="circle circle-5"></div>
+        <div class="circle circle-4"></div>
+        <div class="circle circle-3"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-1"></div>
+      </div>
+    </button>
+  </div>
+  <div id="learn-options" class="learn-opts hidden">
+    <h3>Word Category</h3>
+    <div class="ws-grid">
+      <button class="diff-btn selected" data-wordset="niche">Niche & Rare</button>
+      <button class="diff-btn" data-wordset="long">Long (8+)</button>
+      <button class="diff-btn" data-wordset="sat">SAT / GRE</button>
+      <button class="diff-btn" data-wordset="ielts">IELTS</button>
+      <button class="diff-btn" data-wordset="random">Random</button>
+    </div>
+    <button class="uiverse" id="btn-start-typing" style="margin-top:12px">
+      <div class="wrapper">
+        <span>Start</span>
+        <div class="circle circle-12"></div>
+        <div class="circle circle-11"></div>
+        <div class="circle circle-10"></div>
+        <div class="circle circle-9"></div>
+        <div class="circle circle-8"></div>
+        <div class="circle circle-7"></div>
+        <div class="circle circle-6"></div>
+        <div class="circle circle-5"></div>
+        <div class="circle circle-4"></div>
+        <div class="circle circle-3"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-1"></div>
+      </div>
+    </button>
+  </div>
+</div></div></div>
+
+<!-- ===== ENDLESS MODE ===== -->
+<div id="screen-mode-endless" class="screen"><div class="glass"><div class="glass-bar"><span class="glass-title">Endless Mode</span></div><div class="glass-body">
+  <button class="back-btn" data-screen="screen-menu">← Back</button>
+  <p class="panel-desc">No lives, no timer. See how long a chain you can build. Your score is your chain length.</p>
+  <button class="uiverse" id="btn-start-endless">
+    <div class="wrapper">
+      <span>Start</span>
+      <div class="circle circle-12"></div>
+      <div class="circle circle-11"></div>
+      <div class="circle circle-10"></div>
+      <div class="circle circle-9"></div>
+      <div class="circle circle-8"></div>
+      <div class="circle circle-7"></div>
+      <div class="circle circle-6"></div>
+      <div class="circle circle-5"></div>
+      <div class="circle circle-4"></div>
+      <div class="circle circle-3"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-1"></div>
+    </div>
+  </button>
+</div></div></div>
+
+<!-- ===== SOLO ===== -->
+<div id="screen-mode-solo" class="screen"><div class="glass"><div class="glass-bar"><span class="glass-title">Solo Mode</span></div><div class="glass-body">
+  <button class="back-btn" data-screen="screen-menu">← Back</button>
+  <div class="diff-grid">
+    <button class="diff-btn" data-timer="45"><strong>Casual</strong><small>45s</small></button>
+    <button class="diff-btn selected" data-timer="30"><strong>Standard</strong><small>30s</small></button>
+    <button class="diff-btn" data-timer="15"><strong>Blitz</strong><small>15s</small></button>
+    <button class="diff-btn" data-timer="9999"><strong>Zen</strong><small>∞</small></button>
+  </div>
+  <button class="uiverse" id="btn-start-solo">
+    <div class="wrapper">
+      <span>Start Game</span>
+      <div class="circle circle-12"></div>
+      <div class="circle circle-11"></div>
+      <div class="circle circle-10"></div>
+      <div class="circle circle-9"></div>
+      <div class="circle circle-8"></div>
+      <div class="circle circle-7"></div>
+      <div class="circle circle-6"></div>
+      <div class="circle circle-5"></div>
+      <div class="circle circle-4"></div>
+      <div class="circle circle-3"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-1"></div>
+    </div>
+  </button>
+</div></div></div>
+
+<!-- ===== GAME ===== -->
+<div id="screen-game" class="screen">
+  <div class="game-layout" id="game-layout">
+    <aside class="sidebar sidebar-left" id="sidebar-left" style="display:none">
+      <div class="glass sidebar-glass"><div class="glass-bar"><span class="glass-title">Candidates</span><span id="cand-count" class="sb-count">0</span></div><div class="glass-body sb-body"><div class="sb-sort"><select id="cand-sort"><option value="alpha">A → Z</option><option value="alpha-desc">Z → A</option><option value="short">Shortest First</option><option value="long">Longest First</option><option value="vowels">Most Vowels</option><option value="rare">Rarest Letters</option><option value="random">Random</option></select></div><div class="sb-list" id="cand-list"></div></div></div>
+    </aside>
+    <main class="game-center">
+      <div class="glass game-glass">
+        <div class="glass-bar"><span class="glass-title" id="game-title">Last Letter</span><div class="glass-bar-r"><button class="glass-icon" id="btn-quit">✕</button></div></div>
+        <div class="glass-body game-body">
+          <header class="game-header">
+            <div class="gh-stat"><span class="gh-label">Round</span><span id="hud-round" class="gh-val">1</span></div>
+            <div id="timer-ring" class="timer-ring"><svg viewBox="0 0 60 60"><circle class="timer-track" cx="30" cy="30" r="26"/><circle id="timer-arc" class="timer-fill" cx="30" cy="30" r="26"/></svg><span id="timer-text" class="timer-text">30</span></div>
+            <div class="gh-stat"><span class="gh-label">Score</span><span id="hud-score" class="gh-val">0</span></div>
+            <div class="gh-lives" id="hud-lives"></div>
+          </header>
+          <div id="turn-banner" class="turn-banner hidden"></div>
+          <div id="chain-area" class="chain-area"><div id="chain-words" class="chain-words"></div></div>
+          <div class="typing-area">
+            <div class="tries-row"><span class="tries-label">Tries</span><div id="tries-dots" class="tries-dots"></div></div>
+            <div id="word-display" class="word-display"><span id="wd-prefix" class="wd-prefix"></span><span id="wd-typed" class="wd-typed"></span><span class="wd-cursor">|</span></div>
+            <div id="input-feedback" class="input-feedback"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <aside class="sidebar sidebar-right" id="sidebar-right" style="display:none">
+      <div class="glass sidebar-glass"><div class="glass-bar"><span class="glass-title">Definitions</span></div><div class="glass-body sb-body"><div class="sb-defs" id="def-list"></div></div></div>
+    </aside>
+  </div>
+</div>
+
+<!-- ===== TYPING ===== -->
+<div id="screen-typing" class="screen">
+  <div class="glass glass-lg">
+    <div class="glass-bar"><span class="glass-title">Typing Practice</span><div class="glass-bar-r"><button class="glass-icon" id="btn-typing-quit">✕</button></div></div>
+    <div class="glass-body typing-body">
+      <div class="typing-header">
+        <div class="gh-stat"><span class="gh-label">WPM</span><span id="typing-wpm" class="gh-val">0</span></div>
+        <div class="gh-stat"><span class="gh-label">Words</span><span id="typing-count" class="gh-val">0</span></div>
+        <div class="gh-stat"><span class="gh-label">Accuracy</span><span id="typing-acc" class="gh-val">100%</span></div>
+      </div>
+      <div class="typing-main">
+        <div class="typing-def-area"><div id="typing-target" class="typing-tw"></div><div id="typing-pos" class="typing-tp"></div><div id="typing-def" class="typing-td"></div></div>
+        <div class="typing-input-display" id="typing-display"></div>
+        <div id="typing-feedback" class="input-feedback"></div>
+      </div>
+      <div id="typing-history" class="typing-history"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GAME OVER ===== -->
+<div id="screen-gameover" class="screen">
+  <div class="glass">
+    <div class="glass-bar"><span class="glass-title">Game Over</span></div>
+    <div class="glass-body go-body">
+      <div class="go-score-wrap"><div class="go-score-label">Final Score</div><div id="go-score" class="go-score">0</div></div>
+      <div class="go-stats">
+        <div class="go-stat"><span class="go-stat-val" id="go-rounds">0</span><span class="go-stat-lbl" id="go-rounds-lbl">Rounds</span></div>
+        <div class="go-divider"></div>
+        <div class="go-stat"><span class="go-stat-val" id="go-words">0</span><span class="go-stat-lbl">Words</span></div>
+        <div class="go-divider"></div>
+        <div class="go-stat"><span class="go-stat-val" id="go-best">—</span><span class="go-stat-lbl">Best</span></div>
+      </div>
+      <div id="go-chain" class="go-chain"></div>
+      <div id="go-learned" class="go-learned hidden"><h3>Words Learned</h3><div id="go-learned-list"></div></div>
+      <div class="go-btns">
+        <button class="uiverse" id="btn-replay">
+          <div class="wrapper">
+            <span>Play Again</span>
+            <div class="circle circle-12"></div>
+            <div class="circle circle-11"></div>
+            <div class="circle circle-10"></div>
+            <div class="circle circle-9"></div>
+            <div class="circle circle-8"></div>
+            <div class="circle circle-7"></div>
+            <div class="circle circle-6"></div>
+            <div class="circle circle-5"></div>
+            <div class="circle circle-4"></div>
+            <div class="circle circle-3"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-1"></div>
+          </div>
+        </button>
+        <button class="btn-secondary" id="btn-go-menu">Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute; overflow: hidden" color-interpolation-filters="sRGB">
+  <defs id="lq-glass-svg-defs"></defs>
+</svg>
+
+<!-- ===== LLM TRAINING UI ===== -->
+<div id="llm-training-ui" class="glass hidden" style="position:fixed; top:20px; right:20px; width:300px; z-index:9999;">
+  <div class="glass-bar"><span class="glass-title">GLM-5.1 Training</span><div class="glass-bar-r"><button class="glass-icon" onclick="document.getElementById('llm-training-ui').classList.add('hidden')">✕</button></div></div>
+  <div class="glass-body" style="padding:15px; font-size:11px;">
+    <div id="llm-status" style="color:var(--accent); font-weight:bold; margin-bottom:10px;">Waiting for Omega...</div>
+    <div id="llm-results" style="max-height:200px; overflow-y:auto; color:var(--ink2);"></div>
+  </div>
+</div>
+
+<script src="words_alpha.js"></script>
+<script src="dictionary.js"></script>
+<script src="bots.js"></script>
+<script src="liquid-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LastLetterV4 - Ultimate Word Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================
+           THEME & VARIABLES: Obsidian Crypto Glass
+           ========================================= */
+        :root {
+            --bg-deep: #050507;
+            --bg-glass: rgba(15, 17, 26, 0.6);
+            --bg-glass-hover: rgba(25, 28, 43, 0.8);
+            --border-glass: rgba(0, 240, 255, 0.15);
+            --border-glow: rgba(0, 240, 255, 0.4);
+
+            --neon-cyan: #00f0ff;
+            --neon-cyan-dim: #007a82;
+            --neon-purple: #b026ff;
+            --neon-green: #39ff14;
+            --neon-red: #ff2a2a;
+            --neon-yellow: #ffea00;
+
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dark: #0f111a;
+
+            --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* =========================================
+           GLOBAL RESETS & BACKGROUND
+           ========================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            /* Futuristic hex/grid background simulation */
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(176, 38, 255, 0.05), transparent 25%);
+            font-family: var(--font-stack);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-glass);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-cyan-dim);
+        }
+
+        /* =========================================
+           MAIN DASHBOARD FRAME (Glassmorphism)
+           ========================================= */
+        #app-frame {
+            width: 400px;
+            height: 650px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 240, 255, 0.02);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        #app-frame:hover {
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            border: 1px solid var(--border-glow);
+        }
+
+        /* =========================================
+           HEADER & WINDOW CONTROLS
+           ========================================= */
+        #header {
+            height: 48px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            cursor: grab;
+        }
