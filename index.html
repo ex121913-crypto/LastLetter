@@ -335,10 +335,15 @@
   <div class="glass-body" style="padding:15px; font-size:11px;">
     <div id="llm-status" style="color:var(--accent); font-weight:bold; margin-bottom:10px;">Waiting for Omega...</div>
     <div id="llm-results" style="max-height:200px; overflow-y:auto; color:var(--ink2);"></div>
+    <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:8px;">
+      <button class="btn-primary" style="width:100%; font-size:10px; padding:6px;" onclick="Bots.linkOmegaFile()">Link Local Brain File (Auto-Save)</button>
+      <div style="font-size:9px; color:var(--ink3); margin-top:4px; text-align:center;">Link once to save all AI words directly to omega_brain.js</div>
+    </div>
   </div>
 </div>
 
 <script src="words_alpha.js"></script>
+<script src="omega_brain.js"></script>
 <script src="dictionary.js"></script>
 <script src="bots.js"></script>
 <script src="liquid-engine.js"></script>

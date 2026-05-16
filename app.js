@@ -249,6 +249,7 @@ function botTurn(){
       S.round++;S.prefix=ALP[Math.floor(Math.random()*26)];S.timer=S.timerTicks;S.tries=S.maxTries;
       S.isPlayerTurn=true;typed='';showTurn(true);refreshAll();if(S.isLearn)updateCands();return;}
     var pts=scoreWord(word);S.usedSet.add(word);S.usedWords.push(word);addChain(word,pts,'bot');
+    if(S.isLearn)addSideDef(word);
     var diff=Bots.getById(S.botId).diff;
     var next=Bots.findBestPrefix(word,diff,S.round,S.usedSet);
     S.round++;S.tries=S.maxTries;S.timer=S.timerTicks;S.prefix=next;

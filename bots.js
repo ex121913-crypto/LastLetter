@@ -26,11 +26,62 @@ var BOTS=[
 var playerHist=[];
 // Neural weights and memory
 var OmegaData=(function(){
-  try{var d=localStorage.getItem('ll_omega');if(d)return JSON.parse(d);}catch(e){}
-  return {weights:{wLen:.3,wTrap:.5,wSuffix:.4,wScarcity:.6,wVariance:-.2},learnedSuffixes:[]};
+  var base = {weights:{wLen:.3,wTrap:.5,wSuffix:.4,wScarcity:.6,wVariance:-.2},learnedSuffixes:[],knowledge:{}};
+  try {
+    var d=localStorage.getItem('ll_omega');
+    if(d) {
+      var saved = JSON.parse(d);
+      // Merge saved knowledge with hardcoded OMEGA_BRAIN if it exists (for deployment)
+      if (window.OMEGA_BRAIN) {
+        for (var p in window.OMEGA_BRAIN) {
+          if (!saved.knowledge[p]) saved.knowledge[p] = {};
+          for (var w in window.OMEGA_BRAIN[p]) {
+             saved.knowledge[p][w] = Math.max(saved.knowledge[p][w] || 0, window.OMEGA_BRAIN[p][w]);
+          }
+        }
+      }
+      return saved;
+    }
+  } catch(e){}
+  // Fallback to hardcoded OMEGA_BRAIN if no localStorage
+  if (window.OMEGA_BRAIN) base.knowledge = window.OMEGA_BRAIN;
+  return base;
 })();
+if (!OmegaData.knowledge) OmegaData.knowledge = {};
+var OmegaFileHandle = null;
+
+async function linkOmegaFile() {
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      types: [{ description: 'Omega Brain JS', accept: { 'text/javascript': ['.js'] } }],
+      multiple: false
+    });
+    OmegaFileHandle = handle;
+    alert("Omega successfully linked to " + handle.name + "! All training data will now save automatically to your disk.");
+    saveOmega();
+  } catch (e) {
+    console.warn("File linking cancelled or failed:", e);
+  }
+}
+
+async function saveOmega() {
+  try {
+    localStorage.setItem('ll_omega', JSON.stringify(OmegaData));
+    
+    // AUTO-SAVE to local file if linked
+    if (OmegaFileHandle) {
+      const writable = await OmegaFileHandle.createWritable();
+      const content = "window.OMEGA_BRAIN = " + JSON.stringify(OmegaData.knowledge, null, 2) + ";";
+      await writable.write(content);
+      await writable.close();
+      console.log("Omega Brain auto-saved to disk.");
+    }
+  } catch(e) {
+    console.error("Save failed:", e);
+  }
+}
+
 var NN=OmegaData.weights;
-function saveOmega(){try{localStorage.setItem('ll_omega',JSON.stringify(OmegaData));}catch(e){}}
 function trainOmega(suffix){
   if(suffix&&suffix.length>1&&!OmegaData.learnedSuffixes.includes(suffix)){
     OmegaData.learnedSuffixes.push(suffix);saveOmega();
@@ -168,6 +219,20 @@ function _eliminate(c,us){
 /** Neural network bot — scores each candidate on multiple features */
 function _neural(c,us){
   var sample=c.length>80?_sample(c,80):c;
+  
+  // Integrate learned knowledge from LLM directly into the sample
+  if (c.length > 0) {
+    var shared = c[0].substring(0, 1); // get first letter
+    // If we have learned words for this 1-3 letter prefix, add them to sample
+    for(var k=1; k<=3; k++) {
+      var p = c[0].substring(0, k);
+      var learned = OmegaData.knowledge[p] || {};
+      for(var lw in learned) {
+        if(lw.startsWith(p) && !us.has(lw) && !sample.includes(lw)) sample.push(lw);
+      }
+    }
+  }
+
   var best=null,bestScore=-Infinity;
   for(var i=0;i<sample.length;i++){
     var w=sample[i],ns=new Set(us);ns.add(w);
@@ -182,10 +247,24 @@ function _neural(c,us){
     var opts=Dict.findWords(w[w.length-1],ns,200).length;
     var fScarcity=1-Math.min(opts,200)/200;
     // Feature 5: variance from player avg (surprise factor)
-    var fVar=0;
-    if(playerHist.length>1){var avg=0;for(var p=0;p<playerHist.length;p++)avg+=playerHist[p].length;avg/=playerHist.length;fVar=Math.abs(w.length-avg)/10;}
-    // Score
-    var score=NN.wLen*fLen+NN.wTrap*fTrap+NN.wSuffix*fSuffix+NN.wScarcity*fScarcity+NN.wVariance*fVar;
+    var avg=5;if(playerHist.length>0){var s=0;for(var h=0;h<playerHist.length;h++)s+=playerHist[h].length;avg=s/playerHist.length;}
+    var fVar=1-Math.min(Math.abs(w.length-avg),10)/10;
+    
+    // Feature 6: Learned difficulty from LLM
+    var fLearned = 0;
+    var learnedData = null;
+    if (OmegaData.knowledge[w.substring(0,1)] && OmegaData.knowledge[w.substring(0,1)][w]) learnedData = OmegaData.knowledge[w.substring(0,1)][w];
+    if (OmegaData.knowledge[w.substring(0,2)] && OmegaData.knowledge[w.substring(0,2)][w]) learnedData = OmegaData.knowledge[w.substring(0,2)][w];
+    if (OmegaData.knowledge[w.substring(0,3)] && OmegaData.knowledge[w.substring(0,3)][w]) learnedData = OmegaData.knowledge[w.substring(0,3)][w];
+    
+    if (learnedData) {
+       fLearned = (learnedData.s || 0) / 10;
+       // If the word has a learned definition, inject it so it shows in game UI
+       if (learnedData.d) Dict.injectDef(w, learnedData.d);
+    }
+
+    var score = fLen*NN.wLen + fTrap*NN.wTrap + fSuffix*NN.wSuffix + fScarcity*NN.wScarcity + fVar*NN.wVariance + fLearned*1.5;
+    
     // Add small randomness for variety
     score+=Math.random()*.08;
     if(score>bestScore){bestScore=score;best=w;}
@@ -221,12 +300,31 @@ async function _neuralLLM(prefix, usedSet) {
   }
 
   var usedArr = Array.from(usedSet);
-  var usedStr = usedArr.length > 0 ? " Do not use these words: " + usedArr.join(", ") : "";
-  var prompt = `Given the starting prefix "${prefix}", generate 5 really hard, obscure English words that start with "${prefix}".${usedStr} Format your response ONLY as a JSON array of objects. Each object must have a "word" string and a "score" integer (1-10) for difficulty. Example: [{"word": "example", "score": 8}]. Output nothing else.`;
+  var usedStr = usedArr.length > 0 ? " Forbidden words (already used): " + usedArr.join(", ") : "";
+  
+  var prompt = `You are the "Omega" Grandmaster of the "Last Letter" word game. 
+GAME RULES:
+1. You must provide a word starting with the prefix: "${prefix}".
+2. The opponent must then provide a word starting with the LAST few letters of your word.
+3. YOUR GOAL: Choose a word that is extremely hard for a human to follow. 
+
+STRATEGIC INSTRUCTIONS:
+- Use obscure, archaic, or highly technical vocabulary.
+- TRAPS: End your words with rare letters (Q, X, Z, J) or suffixes like "ISM", "NESS", "TION", "OUS".
+- CRITICAL: The ending of your word MUST lead to a prefix that actually has valid words in the dictionary. Do not create impossible prefixes; create DIFFICULT prefixes where the follow-up words are extremely rare or obscure.
+- Think several steps ahead: pick a word that lures the opponent into a trap or a very limited set of choices.
+
+${usedStr}
+
+OUTPUT REQUIREMENT:
+Format your response ONLY as a JSON array of 5 objects. Each object must have a "word" string and a "score" integer (1-10) representing how likely this word is to cause the human player to lose.
+Example: [{"word": "syzygy", "score": 10}, {"word": "qabalah", "score": 9}].
+Output ONLY the JSON. No conversational text.`;
 
   try {
     var res = await fetch(fetchUrl, {
       method: "POST",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + apiKey
@@ -237,6 +335,11 @@ async function _neuralLLM(prefix, usedSet) {
         temperature: 0.7
       })
     });
+    
+    if (!res.ok) {
+      var errBody = await res.text();
+      throw new Error("API Error " + res.status + ": " + errBody.substring(0, 50));
+    }
     
     var data = await res.json();
     var content = data.choices[0].message.content;
@@ -252,12 +355,27 @@ async function _neuralLLM(prefix, usedSet) {
     for(var i=0; i<parsed.length; i++) {
       var w = parsed[i].word.toLowerCase();
       var sc = parsed[i].score;
+      
+      // Filter: ONLY words with letters (no hyphens, numbers, or symbols)
+      if (!/^[a-z]+$/.test(w)) continue;
+
       html += '<li style="margin-bottom:4px;"><strong>' + w + '</strong> <span style="color:var(--accent)">★ ' + sc + '/10</span></li>';
+      
+      // Omega LEARNS: Save to knowledge base
+      for(var k=1; k<=3; k++) {
+        if(w.length < k) continue;
+        var p = w.substring(0, k);
+        if(!OmegaData.knowledge[p]) OmegaData.knowledge[p] = {};
+        // Store best score
+        OmegaData.knowledge[p][w] = Math.max((OmegaData.knowledge[p][w] || 0), sc);
+      }
+
       if(sc > bestScore && w.startsWith(prefix.toLowerCase()) && !usedSet.has(w)) {
          bestScore = sc;
          bestWord = w;
       }
     }
+    saveOmega(); // Save knowledge base to localStorage
     html += '</ul>';
 
     if(ui) {
@@ -299,5 +417,6 @@ function getDelay(id){return 10;} // Removed fake thinking wait as requested
 return{getAll:getAll,getById:getById,pickWord:pickWord,pickWordAsync:pickWordAsync,getDelay:getDelay,
        resetAdaptive:resetAdaptive,recordPlayerWord:recordPlayerWord,
        getPrefixLength:getPrefixLength,getSoloPrefixLength:getSoloPrefixLength,
-       findBestPrefix:findBestPrefix,OmegaData:OmegaData,saveOmega:saveOmega,trainOmega:trainOmega};
+       findBestPrefix:findBestPrefix,OmegaData:OmegaData,saveOmega:saveOmega,trainOmega:trainOmega,
+       linkOmegaFile:linkOmegaFile};
 })();

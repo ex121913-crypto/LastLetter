@@ -32,13 +32,14 @@ var Dict = (function () {
         var loaded = false;
         
         if (bank === 'full' && typeof WORDS_ALPHA !== 'undefined' && WORDS_ALPHA) {
-            var list = WORDS_ALPHA.split(/\r?\n/);
-            var count = 0;
-            for (var i = 0; i < list.length; i++) {
-                var w = list[i].trim().toLowerCase();
-                if (w.length >= 2 && /^[a-z]+$/.test(w)) { _index(w); count++; }
+            // Aggressively match all sequences of 2+ letters to avoid parsing the JS declaration
+            var list = WORDS_ALPHA.match(/[a-z]{2,}/gi);
+            if (list) {
+                for (var i = 0; i < list.length; i++) {
+                    _index(list[i].toLowerCase());
+                }
+                loaded = true;
             }
-            if (count > 500) loaded = true;
         }
 
         if (!loaded) {
@@ -142,5 +143,11 @@ var Dict = (function () {
         return fb;
     }
 
-    return { load: load, isValid: isValid, isReady: isReady, getSize: getSize, findWords: findWords, countWords: countWords, fetchDefinition: fetchDefinition, words: words, byPrefix: byPrefix };
+    function injectDef(word, def) {
+        if (!defCache[word]) {
+            defCache[word] = { pos: 'Neural AI', def: def, source: 'Omega Brain' };
+        }
+    }
+
+    return { load: load, isValid: isValid, isReady: isReady, getSize: getSize, findWords: findWords, countWords: countWords, fetchDefinition: fetchDefinition, injectDef: injectDef, words: words, byPrefix: byPrefix };
 })();
