@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Last Letter — A Word Game</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Libre+Franklin:wght@300;400;500;600;700;800&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="liquid-glass.css">
+  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="liquid-glass.css?v=2">
 </head>
 <body>
 
@@ -59,7 +59,7 @@
 <div id="screen-settings" class="screen"><div class="glass glass-md"><div class="glass-bar"><span class="glass-title">Settings</span></div><div class="glass-body">
   <button class="back-btn" data-screen="screen-menu">← Back</button>
   <div class="settings-grid">
-    <div class="sg"><label>Word Bank</label><select id="s-wordbank"><option value="full">Full (~370K)</option><option value="common">Common (~20K)</option><option value="sat">SAT Prep</option><option value="ielts">IELTS</option><option value="niche">Niche/Rare</option><option value="fallback">Offline (~800)</option></select></div>
+    <div class="sg"><label>Word Bank</label><select id="s-wordbank"><option value="sowpods" selected>SOWPODS (Default)</option><option value="dwyl">dwyl (~370K)</option><option value="common">Common (~20K)</option><option value="sat">SAT Prep</option><option value="ielts">IELTS</option><option value="niche">Niche/Rare</option><option value="fallback">Offline (~800)</option></select></div>
     <div class="sg"><label>Lives</label><select id="s-lives"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option><option value="99">∞</option></select></div>
     <div class="sg"><label>Tries</label><select id="s-tries"><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option><option value="99">∞</option></select></div>
     <div class="sg"><label>Candidates</label><select id="s-cand"><option value="off">Off</option><option value="count">Count</option><option value="on" selected>List</option></select></div>
@@ -78,8 +78,14 @@
     </div>
     <div style="display:flex;gap:8px;margin-bottom:8px">
       <input type="text" id="s-llm-host" placeholder="API Host (e.g. https://cmkey.cn/v1)" style="flex:2;padding:8px 12px;border-radius:6px;border:1px solid var(--border);font-family:var(--sans);background:var(--surface-alt);color:var(--ink)">
-      <div style="flex:1; display:flex; align-items:center; gap:6px;">
-        <input type="checkbox" id="s-llm-cors" style="cursor:pointer"> <label for="s-llm-cors" style="font-size:11px;cursor:pointer;color:var(--ink2)">Use CORS Proxy</label>
+      <div style="flex:1; display:flex; align-items:center; justify-content:flex-start; padding-left:4px;">
+        <div class="premium-switch-container">
+          <label class="premium-switch">
+            <input type="checkbox" id="s-llm-cors">
+            <span class="switch-slider"></span>
+          </label>
+          <label for="s-llm-cors" style="font-size:11px;cursor:pointer;color:var(--ink2);user-select:none;">CORS Proxy</label>
+        </div>
       </div>
     </div>
   </div>
@@ -342,11 +348,12 @@
   </div>
 </div>
 
-<script src="words_alpha.js"></script>
-<script src="omega_brain.js"></script>
-<script src="dictionary.js"></script>
-<script src="bots.js"></script>
-<script src="liquid-engine.js"></script>
-<script src="app.js"></script>
+<script src="sowpods.js?v=2"></script>
+<script src="words_alpha.js?v=2"></script>
+<script src="omega_brain.js?v=2"></script>
+<script src="dictionary.js?v=2"></script>
+<script src="bots.js?v=2"></script>
+<script src="liquid-engine.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

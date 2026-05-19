@@ -86,13 +86,13 @@
 /* ==== LETTER WAVE ANIMATION ==== */
 .lq-letter {
   display: inline-block;
-  opacity: 0.4;
+  opacity: 0.6;
   transform: translateY(0);
   animation: lqLetterWave 2.2s infinite;
   z-index: 1;
 }
 @keyframes lqLetterWave {
-  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); }
+  0%, 100% { opacity: 0.6; transform: translateY(0) scale(1); }
   20%      { opacity: 1;   transform: scale(1.15); }
   40%      { opacity: 0.7; transform: translateY(0) scale(1); }
 }
@@ -178,7 +178,7 @@
 
 .liquid-bg .orb {
   position: absolute; border-radius: 50%;
-  filter: blur(90px); opacity: 0.3; will-change: transform;
+  filter: blur(90px); opacity: 0.45; will-change: transform;
 }
 .liquid-bg .orb-1 {
   width: 400px; height: 400px;
@@ -211,10 +211,10 @@
 
 /* ---- GLASS PANEL + PRISMATIC BORDER ---- */
 [data-theme="liquid"] .glass {
-  background: rgba(255,255,255,0.04);
-  backdrop-filter: blur(40px) saturate(1.4) brightness(1.05);
-  -webkit-backdrop-filter: blur(40px) saturate(1.4) brightness(1.05);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.025);
+  backdrop-filter: blur(40px) saturate(1.4) brightness(1.02);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4) brightness(1.02);
+  border: 1px solid rgba(255,255,255,0.05);
 }
 [data-theme="liquid"] .glass::before {
   content: ''; position: absolute; inset: -1px;
@@ -248,9 +248,9 @@
 [data-theme="liquid"] .menu-logo {
   font-family: 'Inter',-apple-system,sans-serif;
   font-weight: 800; letter-spacing: -2px;
-  background: linear-gradient(135deg, #fff, rgba(255,255,255,0.65));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #fff;
+  background: none;
+  -webkit-text-fill-color: #fff;
 }
 [data-theme="liquid"] .menu-rule {
   background: linear-gradient(90deg,
@@ -262,10 +262,12 @@
 
 /* ==== MENU BUTTONS — LIQUID GLASS STYLE ==== */
 [data-theme="liquid"] .menu-btn {
-  background: rgba(255, 255, 255, 0.01);
+  background: transparent;
   border: none;
   position: relative; overflow: hidden;
-  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 /* Liquid Glass Inset Glow */
@@ -273,7 +275,7 @@
   content: ''; pointer-events: none;
   position: absolute; z-index: 3; inset: 0;
   border-radius: inherit;
-  box-shadow: inset 0 0 20px -5px rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 15px -5px rgba(255, 255, 255, 0.04);
 }
 [data-theme="liquid"] .menu-btn .mi,
 [data-theme="liquid"] .menu-btn .mt { position: relative; z-index: 2; }
@@ -287,8 +289,8 @@
 
 /* ==== SETTINGS DROPDOWN OPTIONS ==== */
 [data-theme="liquid"] .sg select option {
-  background: #050507;
-  color: #aaa;
+  background: #0f0f13;
+  color: #ccc;
 }
 
 /* ==== GENERIC PRIMARY BUTTONS (e.g. Save & Close) ==== */
@@ -388,6 +390,11 @@
 
 .uiverse:hover {
   --duration: 1400ms;
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 10px 24px var(--c-shadow);
+}
+.uiverse {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
 }
 
 .uiverse .wrapper .circle {
@@ -633,6 +640,7 @@
 [data-theme="liquid"] .sg select {
   background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06);
   color: var(--ink);
+  color-scheme: dark;
 }
 [data-theme="liquid"] .sg select:focus {
   border-color: rgba(173,95,255,0.4);
@@ -641,7 +649,7 @@
 
 /* ---- DIFF/WS BUTTONS ---- */
 [data-theme="liquid"] .diff-btn {
-  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.035);
   position: relative; overflow: hidden;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   -webkit-mask-image: -webkit-radial-gradient(white, black);
@@ -680,26 +688,67 @@
   animation-duration: 1400ms !important;
 }
 
-/* ---- BOT CARDS ---- */
-[data-theme="liquid"] .bot-card {
-  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);
+/* Hide orbs on bot/learn cards by default, show on hover/active */
+[data-theme="liquid"] .bot-card:not(:hover) .lq-orb-layer,
+[data-theme="liquid"] .learn-card:not(:hover):not(.active-card) .lq-orb-layer {
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
-[data-theme="liquid"] .bot-card:hover {
-  border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.05);
-  box-shadow: 0 0 16px rgba(173,95,255,0.06); transform: translateY(-3px);
+[data-theme="liquid"] .bot-card:hover .lq-orb-layer,
+[data-theme="liquid"] .learn-card:hover .lq-orb-layer,
+[data-theme="liquid"] .learn-card.active-card .lq-orb-layer {
+  opacity: 1;
 }
-[data-theme="liquid"] .bot-badge.easy   { background: rgba(142,230,160,0.1); color: #8ee6a0; }
-[data-theme="liquid"] .bot-badge.medium { background: rgba(240,200,80,0.1);  color: #f0c850; }
-[data-theme="liquid"] .bot-badge.hard   { background: rgba(240,112,112,0.1); color: #f07070; }
-[data-theme="liquid"] .bot-badge.extreme{ background: rgba(173,95,255,0.12); color: #ad5fff; }
 
-/* ---- LEARN CARDS ---- */
+/* ---- BOT CARDS & LEARN CARDS — Unified with solo diff-btn style ---- */
+[data-theme="liquid"] .bot-card,
 [data-theme="liquid"] .learn-card {
-  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02); 
+  border: 1px solid rgba(255,255,255,0.035);
+  position: relative; overflow: hidden;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
+[data-theme="liquid"] .bot-card:hover,
 [data-theme="liquid"] .learn-card:hover,
 [data-theme="liquid"] .learn-card.active-card {
-  border-color: rgba(173,95,255,0.3); background: rgba(173,95,255,0.05);
+  background: radial-gradient(circle, rgba(120,50,200,0.25), rgba(160,100,255,0.15) 80%);
+  border-color: transparent;
+  box-shadow: 0 0 18px rgba(173,95,255,0.3);
+  transform: scale(1.02);
+}
+[data-theme="liquid"] .bot-card::before,
+[data-theme="liquid"] .learn-card::before {
+  content: ''; pointer-events: none;
+  position: absolute; z-index: 3; inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+[data-theme="liquid"] .bot-card:hover::before,
+[data-theme="liquid"] .learn-card:hover::before,
+[data-theme="liquid"] .learn-card.active-card::before {
+  box-shadow: inset 0 3px 10px rgba(200,160,255,0.4), inset 0 -3px 4px rgba(230,210,255,0.25);
+}
+
+/* Orb Visibility — Hide by default, show on hover or active */
+[data-theme="liquid"] .bot-card:not(:hover) .lq-orb-layer,
+[data-theme="liquid"] .learn-card:not(:hover):not(.active-card) .lq-orb-layer,
+[data-theme="liquid"] .diff-btn:not(.selected) .lq-orb-layer {
+  opacity: 0;
+}
+[data-theme="liquid"] .bot-card:hover .lq-orb-layer,
+[data-theme="liquid"] .learn-card:hover .lq-orb-layer,
+[data-theme="liquid"] .learn-card.active-card .lq-orb-layer,
+[data-theme="liquid"] .diff-btn.selected .lq-orb-layer {
+  opacity: 1;
+}
+
+/* Ensure content stays above orbs */
+[data-theme="liquid"] .bot-card *, 
+[data-theme="liquid"] .learn-card * {
+  position: relative;
+  z-index: 2;
 }
 
 /* ---- HISTORY ---- */
@@ -733,7 +782,15 @@
 [data-theme="liquid"] .turn-banner.theirs { background: rgba(128,192,240,0.07); color: #80c0f0; }
 
 /* ---- SIDEBAR ---- */
-[data-theme="liquid"] .sb-sort select { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); }
+[data-theme="liquid"] .sb-sort select {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.4);
+  color-scheme: dark;
+}
+[data-theme="liquid"] .sb-sort select option {
+  background: #0f0f13;
+  color: #ccc;
+}
 [data-theme="liquid"] .cand-word:hover { background: rgba(255,255,255,0.04); }
 [data-theme="liquid"] .def-entry { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); }
 [data-theme="liquid"] .def-entry-pos { color: rgba(173,95,255,0.5); }
@@ -840,7 +897,7 @@
 [data-theme="liquid"] .timer-text { color: #f0f0f2; }
 [data-theme="liquid"] .tries-label { color: rgba(255,255,255,0.3); }
 [data-theme="liquid"] .wd-typed { color: #f0f0f2; }
-[data-theme="liquid"] .cw-text { color: rgba(255,255,255,0.7); }
+[data-theme="liquid"] .cw-text { color: rgba(255,255,255,0.9); }
 [data-theme="liquid"] .cw-score { color: rgba(255,255,255,0.3); }
 [data-theme="liquid"] .go-score-label { color: rgba(255,255,255,0.4); }
 [data-theme="liquid"] .go-stat-val { color: #f0f0f2; }
@@ -860,6 +917,17 @@
 [data-theme="liquid"] .th-wpm { color: rgba(255,255,255,0.3); }
 [data-theme="liquid"] .hd-word-item { color: rgba(255,255,255,0.5); }
 [data-theme="liquid"] .hd-word-item em { color: rgba(173,95,255,0.5); }
+[data-theme="liquid"] .cand-word {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+[data-theme="liquid"] .cand-word:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  transform: translateX(4px);
+}
 [data-theme="liquid"] .sb-list { color: rgba(255,255,255,0.45); }
 [data-theme="liquid"] .input-feedback.error { color: #f07070; }
 [data-theme="liquid"] .input-feedback.success { color: #8ee6a0; }
@@ -869,3 +937,79 @@
 [data-theme="liquid"] #screen-settings h4 { color: rgba(255,255,255,0.4); }
 [data-theme="liquid"] #screen-settings .panel-desc { color: rgba(255,255,255,0.35); }
 [data-theme="liquid"] #btn-clear-history { color: #f07070 !important; }
+[data-theme="liquid"] .cands-select {
+  background: rgba(0,0,0,0.4) !important;
+  color: #f0f0f2 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+}
+[data-theme="liquid"] .cands-select option {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+/* ---- CHEEKY PEACH MODE ---- */
+@keyframes glass-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes peach-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(255, 120, 150, 0.4), inset 0 0 10px rgba(255, 120, 150, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(255, 120, 150, 0.8), inset 0 0 15px rgba(255, 120, 150, 0.4); }
+}
+
+.chain-word.cheeky-shimmer {
+  background: linear-gradient(120deg, rgba(255,140,160,0.1) 0%, rgba(255,180,140,0.2) 30%, rgba(255,255,255,0.35) 50%, rgba(255,180,140,0.2) 70%, rgba(255,140,160,0.1) 100%) !important;
+  background-size: 200% 100% !important;
+  animation: wordIn .3s var(--ease) both, glass-shimmer 3s linear infinite, peach-pulse 2s infinite ease-in-out !important;
+  border-left: 3px solid #ff7a96 !important;
+  border-right: 1px solid rgba(255, 120, 150, 0.3) !important;
+  border-top: 1px solid rgba(255, 120, 150, 0.3) !important;
+  border-bottom: 1px solid rgba(255, 120, 150, 0.3) !important;
+  backdrop-filter: blur(12px) saturate(1.8) !important;
+}
+
+.chain-word.cheeky-shimmer .cw-text {
+  color: #ff9fb3 !important;
+  text-shadow: 0 0 10px rgba(255, 120, 150, 0.8) !important;
+  font-weight: 700 !important;
+}
+
+.chain-word.cheeky-shimmer .cw-score {
+  background: rgba(255, 120, 150, 0.2) !important;
+  color: #ff8fa5 !important;
+  border: 1px solid rgba(255, 120, 150, 0.4) !important;
+  text-shadow: 0 0 8px rgba(255, 120, 150, 0.6) !important;
+}
+
+/* ---- BANANA MODE ---- */
+@keyframes banana-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(255, 220, 100, 0.4), inset 0 0 10px rgba(255, 220, 100, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(255, 220, 100, 0.8), inset 0 0 15px rgba(255, 220, 100, 0.4); }
+}
+
+.chain-word.banana-shimmer {
+  background: linear-gradient(120deg, rgba(255,220,100,0.1) 0%, rgba(255,240,140,0.2) 30%, rgba(255,255,255,0.35) 50%, rgba(255,240,140,0.2) 70%, rgba(255,220,100,0.1) 100%) !important;
+  background-size: 200% 100% !important;
+  animation: wordIn .3s var(--ease) both, glass-shimmer 3s linear infinite, banana-pulse 2s infinite ease-in-out !important;
+  border-left: 3px solid #ffcc00 !important;
+  border-right: 1px solid rgba(255, 220, 100, 0.3) !important;
+  border-top: 1px solid rgba(255, 220, 100, 0.3) !important;
+  border-bottom: 1px solid rgba(255, 220, 100, 0.3) !important;
+  backdrop-filter: blur(12px) saturate(1.8) !important;
+}
+
+.chain-word.banana-shimmer .cw-text {
+  color: #ffeb60 !important;
+  text-shadow: 0 0 10px rgba(255, 220, 100, 0.8) !important;
+  font-weight: 700 !important;
+}
+
+.chain-word.banana-shimmer .cw-score {
+  background: rgba(255, 220, 100, 0.2) !important;
+  color: #ffd700 !important;
+  border: 1px solid rgba(255, 220, 100, 0.4) !important;
+  text-shadow: 0 0 8px rgba(255, 220, 100, 0.6) !important;
+}

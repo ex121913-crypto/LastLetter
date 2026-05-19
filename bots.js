@@ -1,24 +1,24 @@
 /* bots.js — 13 Bots + Neural Network final boss */
 var Bots=(function(){
 'use strict';
-var PFX={easy:[[8,1],[14,2],[Infinity,3]],medium:[[5,1],[10,2],[Infinity,3]],hard:[[3,1],[7,2],[11,3],[Infinity,4]],extreme:[[1,2],[4,3],[8,4],[Infinity,5]]};
+var PFX={easy:[[Infinity,1]],medium:[[Infinity,2]],hard:[[Infinity,3]],extreme:[[Infinity,3]]};
 var KILL_SUFFIXES=['ness','ly','tion','ment','ous','ive','ful','less','ity','ble','ing','ght','ck','rn','wn','pt','lk','mn','ism','ist'];
 var TRAP_CHARS=['x','z','j','q','v'];
 var HARD_ENDINGS=['ck','rn','ght','wn','pt','lk','x','z','j','q'];
 
 var BOTS=[
-  {id:'chill',name:'Chill Charlie',emoji:'😎',diff:'easy',desc:'No strategy. Vibes only.',speed:[3000,5000],errorRate:.18,strat:'random',minAdd:0},
-  {id:'rookie',name:'Rookie Riley',emoji:'🐣',diff:'easy',desc:'Short common words.',speed:[2500,4000],errorRate:.12,strat:'short',minAdd:0},
-  {id:'casual',name:'Casual Casey',emoji:'☕',diff:'medium',desc:'No preference, picks whatever.',speed:[2000,3200],errorRate:.06,strat:'random',minAdd:1},
-  {id:'punny',name:'Punny Pete',emoji:'🃏',diff:'medium',desc:'Favors fun, uncommon words.',speed:[1800,3000],errorRate:.05,strat:'medium',minAdd:1},
-  {id:'steady',name:'Steady Sam',emoji:'🧑‍💼',diff:'medium',desc:'Balanced medium words.',speed:[1600,2800],errorRate:.04,strat:'medium',minAdd:1},
-  {id:'verbose',name:'Verbose Vera',emoji:'📚',diff:'medium',desc:'Maximizes word length.',speed:[1800,3200],errorRate:.05,strat:'long',minAdd:2},
-  {id:'suffocator',name:'Suffocator Sue',emoji:'🫁',diff:'hard',desc:'Ends in -ness, -ly, -tion.',speed:[1100,2000],errorRate:.02,strat:'suffix_kill',minAdd:2},
-  {id:'trapper',name:'Trapper Tom',emoji:'🪤',diff:'hard',desc:'Ends on X, Z, J, Q.',speed:[1000,1800],errorRate:.02,strat:'char_trap',minAdd:2},
-  {id:'wildcard',name:'Wildcard Wes',emoji:'🎲',diff:'hard',desc:'Unpredictable mix.',speed:[900,2000],errorRate:.02,strat:'wildcard',minAdd:2},
-  {id:'speed',name:'Speed Demon',emoji:'⚡',diff:'hard',desc:'Sub-second responses.',speed:[250,700],errorRate:.03,strat:'short',minAdd:1},
-  {id:'combo',name:'Combo Queen',emoji:'👑',diff:'extreme',desc:'Suffix + letter traps + long.',speed:[800,1600],errorRate:.01,strat:'combo',minAdd:3},
-  {id:'adaptive',name:'Neural Nyx',emoji:'🧠',diff:'extreme',desc:'Mirrors then counters.',speed:[700,1500],errorRate:.01,strat:'adaptive',minAdd:3},
+  {id:'chill',name:'Chill Charlie',emoji:'😎',diff:'easy',desc:'No strategy. Vibes only.',speed:[3000,5000],errorRate:0,strat:'random',minAdd:0},
+  {id:'rookie',name:'Rookie Riley',emoji:'🐣',diff:'easy',desc:'Short common words.',speed:[2500,4000],errorRate:0,strat:'short',minAdd:0},
+  {id:'casual',name:'Casual Casey',emoji:'☕',diff:'medium',desc:'No preference, picks whatever.',speed:[2000,3200],errorRate:0,strat:'random',minAdd:1},
+  {id:'punny',name:'Punny Pete',emoji:'🃏',diff:'medium',desc:'Favors fun, uncommon words.',speed:[1800,3000],errorRate:0,strat:'medium',minAdd:1},
+  {id:'steady',name:'Steady Sam',emoji:'🧑‍💼',diff:'medium',desc:'Balanced medium words.',speed:[1600,2800],errorRate:0,strat:'medium',minAdd:1},
+  {id:'verbose',name:'Verbose Vera',emoji:'📚',diff:'medium',desc:'Maximizes word length.',speed:[1800,3200],errorRate:0,strat:'long',minAdd:2},
+  {id:'suffocator',name:'Suffocator Sue',emoji:'🫁',diff:'hard',desc:'Ends in -ness, -ly, -tion.',speed:[1100,2000],errorRate:0,strat:'suffix_kill',minAdd:2},
+  {id:'trapper',name:'Trapper Tom',emoji:'🪤',diff:'hard',desc:'Ends on X, Z, J, Q.',speed:[1000,1800],errorRate:0,strat:'char_trap',minAdd:2},
+  {id:'wildcard',name:'Wildcard Wes',emoji:'🎲',diff:'hard',desc:'Unpredictable mix.',speed:[900,2000],errorRate:0,strat:'wildcard',minAdd:2},
+  {id:'speed',name:'Speed Demon',emoji:'⚡',diff:'hard',desc:'Sub-second responses.',speed:[250,700],errorRate:0,strat:'short',minAdd:1},
+  {id:'combo',name:'Combo Queen',emoji:'👑',diff:'extreme',desc:'Suffix + letter traps + long.',speed:[800,1600],errorRate:0,strat:'combo',minAdd:3},
+  {id:'adaptive',name:'Neural Nyx',emoji:'🧠',diff:'extreme',desc:'Mirrors then counters.',speed:[700,1500],errorRate:0,strat:'adaptive',minAdd:3},
   {id:'eliminator',name:'The Eliminator',emoji:'💀',diff:'extreme',desc:'Minimizes your options. Uses ck,rn,ght traps.',speed:[1000,2200],errorRate:0,strat:'eliminate',minAdd:3},
   {id:'neuralnet',name:'Ω Omega',emoji:'🤖',diff:'extreme',desc:'Neural network scores every move. The final boss.',speed:[1200,2500],errorRate:0,strat:'neural',minAdd:3}
 ];
@@ -103,19 +103,139 @@ function getSoloPrefixLength(round){return round<6?1:round<11?2:Math.random()<.5
 /** Smart prefix fallback: try longest prefix, fall back to shorter */
 function findBestPrefix(word, diff, round, usedSet){
   var maxPfx=getPrefixLength(diff,round);
+  
+  // Define target length filter based on difficulty of the bot who is about to play
+  var targetLenFilter = null;
+  if(diff === 'easy') {
+    targetLenFilter = function(w) { return w.length === 2; };
+  } else if(diff === 'medium') {
+    targetLenFilter = function(w) { return w.length === 3; };
+  } else if(diff === 'hard') {
+    targetLenFilter = function(w) { return w.length === 4; };
+  } else if(diff === 'extreme') {
+    targetLenFilter = function(w) { return w.length === 4 || w.length === 5; };
+  }
+
   for(var len=Math.min(maxPfx,word.length);len>=1;len--){
     var pfx=word.slice(-len);
-    if(Dict.findWords(pfx,usedSet,1).length>0)return pfx;
+    // Find all matching candidate words starting with this prefix
+    var cands = Dict.findWords(pfx, usedSet);
+    if (targetLenFilter) {
+      cands = cands.filter(targetLenFilter);
+    }
+    var count = cands.length;
+
+    if(count > 0) {
+      // Dynamic safe validation using filtered count based on difficulty
+      if(diff === 'easy') {
+        if(len > 1) continue; // Easy bots should NEVER hand a 2+ letter prefix to a player
+        if(count < 2) continue; // 1-letter prefix must have at least 2 remaining 2-letter options
+      } else if(diff === 'medium') {
+        if(len === 2 && count < 2) continue; // 2-letter prefix must have at least 2 remaining 3-letter options
+        if(len === 1 && count < 10) continue; // 1-letter prefix must have at least 10 remaining 3-letter options
+      } else if(diff === 'hard') {
+        if(len === 3 && count < 2) continue; // 3-letter prefix must have at least 2 remaining 4-letter options
+        if(len === 2 && count < 5) continue; // 2-letter prefix must have at least 5 remaining 4-letter options
+        if(len === 1 && count < 15) continue; // 1-letter prefix must have at least 15 remaining 4-letter options
+      } else if(diff === 'extreme') {
+        if(len === 3 && count < 1) continue; // 3-letter prefix must have at least 1 remaining option
+        if(len === 2 && count < 2) continue; // 2-letter prefix must have at least 2 remaining options
+        if(len === 1 && count < 5) continue; // 1-letter prefix must have at least 5 remaining options
+      }
+      return pfx;
+    }
   }
-  // Total fallback: random letter
+  // Total fallback: pick a random letter from the top easy endings so the player is never stuck with a bad random letter!
+  var easyEndings = Dict.getEasyEndings();
+  if (easyEndings && easyEndings.length > 0) {
+    return easyEndings[Math.floor(Math.random() * easyEndings.length)];
+  }
   return 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random()*26)];
 }
 
 function pickWord(botId,prefix,usedSet){
   var bot=getById(botId);if(!bot)return null;
-  if(Math.random()<bot.errorRate)return null;
-  var cands=Dict.findWords(prefix,usedSet,800);
-  if(!cands.length)return null;
+  if(Math.random()<bot.errorRate){
+    console.log("[Bot Debug] " + bot.name + " (" + bot.diff + ") failed due to intentional error rate roll (" + (bot.errorRate*100).toFixed(0) + "% chance).");
+    return null;
+  }
+  var cands=Dict.findWords(prefix,usedSet);
+  if(!cands.length){
+    console.log("[Bot Debug] " + bot.name + " (" + bot.diff + ") failed because no words starting with '" + prefix + "' exist in the dictionary (or all have been played).");
+    return null;
+  }
+  // Prioritize Common Wordlist FIRST for Easy and Medium bots
+  if (bot.diff === 'easy' || bot.diff === 'medium') {
+    var commonWords = Dict.getCommonWords();
+    if (commonWords && commonWords.size > 0) {
+      var commonCands = cands.filter(function(w) {
+        return commonWords.has(w);
+      });
+      if (commonCands.length > 0) {
+        // Filter common words by the preferred length range: Easy: 2-4 letters, Medium: 3-5 letters
+        var minLen = bot.diff === 'easy' ? 2 : 3;
+        var maxLen = bot.diff === 'easy' ? 4 : 5;
+        var lenFiltered = commonCands.filter(function(w) {
+          return w.length >= minLen && w.length <= maxLen;
+        });
+        if (lenFiltered.length > 0) {
+          cands = lenFiltered;
+        } else {
+          cands = commonCands;
+        }
+      } else {
+        // No common words available for this prefix, fall back to SOWPODS filtered by length
+        var minLen = bot.diff === 'easy' ? 2 : 3;
+        var maxLen = bot.diff === 'easy' ? 4 : 5;
+        var lenFiltered = cands.filter(function(w) {
+          return w.length >= minLen && w.length <= maxLen;
+        });
+        if (lenFiltered.length > 0) {
+          cands = lenFiltered;
+        }
+      }
+    } else {
+      // Fallback if common words not loaded
+      var minLen = bot.diff === 'easy' ? 2 : 3;
+      var maxLen = bot.diff === 'easy' ? 4 : 5;
+      var lenFiltered = cands.filter(function(w) {
+        return w.length >= minLen && w.length <= maxLen;
+      });
+      if (lenFiltered.length > 0) cands = lenFiltered;
+    }
+  } else {
+    // Hard and Extreme bots keep their strict length constraints
+    var targetLenFilter;
+    if(bot.diff==='hard'){
+      targetLenFilter=function(w){return w.length===4;};
+    }else if(bot.diff==='extreme'){
+      targetLenFilter=function(w){return w.length===4||w.length===5;};
+    }
+    if(targetLenFilter){
+      var lenFiltered=cands.filter(targetLenFilter);
+      if(lenFiltered.length>0)cands=lenFiltered;
+    }
+  }
+
+  // Whitelist / Blacklist Difficulty Modes
+  if (bot.id === 'chill' || bot.id === 'rookie' || bot.id === 'casual' || bot.id === 'punny') {
+    var easyEndings = Dict.getEasyEndings();
+    if (easyEndings && easyEndings.length > 0) {
+      var whitelistFiltered = cands.filter(function(w) {
+        return easyEndings.indexOf(w[w.length - 1]) !== -1;
+      });
+      if (whitelistFiltered.length > 0) cands = whitelistFiltered;
+    }
+  } else if (bot.id === 'steady' || bot.id === 'verbose') {
+    var hardEndings = Dict.getHardEndings();
+    if (hardEndings && hardEndings.length > 0) {
+      var blacklistFiltered = cands.filter(function(w) {
+        return hardEndings.indexOf(w[w.length - 1]) === -1;
+      });
+      if (blacklistFiltered.length > 0) cands = blacklistFiltered;
+    }
+  }
+
   // Filter: hard bots must add letters (not just match prefix exactly)
   if(bot.minAdd>0){
     var minLen=prefix.length+bot.minAdd;
@@ -358,6 +478,8 @@ Output ONLY the JSON. No conversational text.`;
       
       // Filter: ONLY words with letters (no hyphens, numbers, or symbols)
       if (!/^[a-z]+$/.test(w)) continue;
+      // Filter: Extreme bot must play words of length 4 or 5 only
+      if (w.length !== 4 && w.length !== 5) continue;
 
       html += '<li style="margin-bottom:4px;"><strong>' + w + '</strong> <span style="color:var(--accent)">★ ' + sc + '/10</span></li>';
       
@@ -396,8 +518,11 @@ Output ONLY the JSON. No conversational text.`;
   }
 
   // Fallback
-  var cands=Dict.findWords(prefix,usedSet,800);
-  if(!cands.length) return null;
+  var cands=Dict.findWords(prefix,usedSet);
+  if(!cands.length) {
+    console.log("[Bot Debug] Omega (extreme) failed because no words starting with '" + prefix + "' exist in the dictionary (or all have been played).");
+    return null;
+  }
   return _neural(cands, usedSet);
 }
 

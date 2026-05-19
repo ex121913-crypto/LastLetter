@@ -7,16 +7,30 @@ var LiquidEngine = (function(){
 
   /* ---- PURPLE color scheme (for menu-btn, diff-btn, bot-card, etc.) ---- */
   var PURPLE = {
-    c1: 'rgba(173,95,255,0.7)',   // purple
-    c2: 'rgba(71,30,236,0.8)',    // deep indigo
-    c3: 'rgba(214,10,71,0.6)',    // crimson
-    c4: 'rgba(200,160,255,0.7)',  // lavender
+    c1: 'rgba(173,95,255,0.05)',   // purple
+    c2: 'rgba(71,30,236,0.06)',    // deep indigo
+    c3: 'rgba(214,10,71,0.04)',    // crimson
+    c4: 'rgba(200,160,255,0.05)',  // lavender
     shadow: 'rgba(173,95,255,0.4)',
     shadowInsetTop: 'rgba(200,160,255,0.7)',
     shadowInsetBot: 'rgba(230,210,255,0.5)',
     radialIn: 'rgba(120,50,200,0.25)',
     radialOut: 'rgba(160,100,255,0.12)'
   };
+  
+  /* ---- GOLD color scheme (for special UI highlights) ---- */
+  var GOLD = {
+    c1: 'rgba(255,215,0,0.05)',    // gold
+    c2: 'rgba(255,165,0,0.06)',    // orange
+    c3: 'rgba(255,69,0,0.04)',     // red-orange
+    c4: 'rgba(255,255,224,0.05)',  // light yellow
+    shadow: 'rgba(255,215,0,0.4)',
+    shadowInsetTop: 'rgba(255,255,224,0.7)',
+    shadowInsetBot: 'rgba(255,200,0,0.5)',
+    radialIn: 'rgba(255,180,0,0.25)',
+    radialOut: 'rgba(255,220,100,0.12)'
+  };
+
 
   /* ---- UIVERSE HTML INJECTION ---- */
   function applyUiverseHtml(el) {
@@ -169,7 +183,7 @@ var LiquidEngine = (function(){
 
       var heightFn = SURFACE_FNS.convex_squircle;
       var glassThick = 80, bezelW = Math.min(60, radius - 1, Math.min(w, h) / 2 - 1);
-      var ior = 3.0, scaleRatio = 1.0, blurAmt = 0.3, specOpacity = 0.5, specSat = 4;
+      var ior = 3.0, scaleRatio = 1.0, blurAmt = 0.3, specOpacity = 0.25, specSat = 2.0;
 
       var profile = calculateRefractionProfile(glassThick, bezelW, heightFn, ior, 128);
       var maxDisp = Math.max.apply(null, Array.from(profile).map(Math.abs)) || 1;
@@ -242,7 +256,8 @@ var LiquidEngine = (function(){
     return scheme.c4;
   }
 
-  /** Build the 12-circle orb layer inside an element */
+  /** Build the 12-circle orb layer inside an element 
+      SHARED MAP VERSION: All orbs use position: fixed to align with a global grid */
   function injectFullOrbs(el, scheme, circleCount) {
     if (el.querySelector('.lq-orb-layer')) return;
     var cs = getComputedStyle(el);
@@ -264,6 +279,9 @@ var LiquidEngine = (function(){
       'overflow:hidden;border-radius:inherit;' +
       '-webkit-mask-image:-webkit-radial-gradient(white,black);';
 
+    // Generate a unique speed per glass panel (e.g., between 6s and 9.5s)
+    var uniqueDuration = (6 + Math.random() * 3.5).toFixed(2) + 's';
+
     var n = circleCount || CIRCLE_DEFS.length;
     for (var i = 0; i < n && i < CIRCLE_DEFS.length; i++) {
       var def = CIRCLE_DEFS[i];
@@ -271,22 +289,31 @@ var LiquidEngine = (function(){
       c.className = 'lq-circle';
       var blur = getBlur(def.group);
       var color = getColor(def.group, scheme);
+      
+      // Generate unique random left/top coordinates between -30% and 130% to scatter the orbs uniquely
+      var randomX = (-30 + Math.random() * 160).toFixed(1) + '%';
+      var randomY = (-30 + Math.random() * 160).toFixed(1) + '%';
+      
+      // Add a unique random animation delay offset for each circle so they are beautifully de-synchronized
+      var uniqueDelay = '-' + (Math.random() * 10).toFixed(2) + 's';
+      
       c.style.cssText =
-        'position:absolute;border-radius:50%;pointer-events:none;' +
-        'width:40px;height:40px;' +
+        'position:fixed;border-radius:50%;pointer-events:none;' +
+        'width:120px;height:120px;' +
         'background:' + color + ';' +
-        'filter:blur(' + blur + 'px);' +
-        'left:' + def.x + ';top:' + def.y + ';' +
+        'filter:blur(' + (blur * 1.5) + 'px);' +
+        'left:' + randomX + ';top:' + randomY + ';' +
         'transform:translateZ(0);' +
         'animation:' + def.anim + ' var(--lq-duration,7s) linear infinite;' +
+        'animation-delay:' + uniqueDelay + ';' +
         'will-change:transform;';
       layer.appendChild(c);
     }
 
     el.insertBefore(layer, el.firstChild);
 
-    // Set base duration
-    el.style.setProperty('--lq-duration', '7s');
+    // Set the base duration variable locally for this panel (enables independent hover acceleration)
+    el.style.setProperty('--lq-duration', uniqueDuration);
   }
 
 
