@@ -263,7 +263,7 @@
       var pts = scoreWord(word); S.usedSet.add(word); S.usedWords.push(word); addChain(word, pts, 'bot');
       if (S.isLearn) addSideDef(word);
       var diff = Bots.getById(S.botId).diff;
-      var next = Bots.findBestPrefix(word, 'player', S.round, S.usedSet);
+      var next = Bots.findBestPrefix(word, diff, S.round, S.usedSet, true);
       S.round++; S.tries = S.maxTries; S.timer = S.timerTicks; S.prefix = next;
       S.isPlayerTurn = true; typed = ''; showTurn(true); refreshAll(); if (S.isLearn) updateCands();
     }, Bots.getDelay(S.botId));

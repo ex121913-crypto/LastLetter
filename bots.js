@@ -1,7 +1,8 @@
 /* bots.js — 13 Bots + Neural Network final boss */
 var Bots=(function(){
 'use strict';
-var PFX={easy:[[Infinity,1]],medium:[[Infinity,2]],hard:[[Infinity,3]],extreme:[[Infinity,3]]};
+// Replace the PFX variable with this:
+var PFX={easy:[[Infinity,1]],medium:[[Infinity,2]],hard:[[Infinity,4]],extreme:[[Infinity,5]]};
 var KILL_SUFFIXES=['ness','ly','tion','ment','ous','ive','ful','less','ity','ble','ing','ght','ck','rn','wn','pt','lk','mn','ism','ist'];
 var TRAP_CHARS=['x','z','j','q','v'];
 var HARD_ENDINGS=['ck','rn','ght','wn','pt','lk','x','z','j','q'];
@@ -100,52 +101,60 @@ function getPrefixLength(diff,round){
 }
 function getSoloPrefixLength(round){return round<6?1:round<11?2:Math.random()<.5?3:2;}
 
-/** Smart prefix fallback: try longest prefix, fall back to shorter */
-function findBestPrefix(word, diff, round, usedSet){
-  var maxPfx=getPrefixLength(diff,round);
-  
-  // Define target length filter based on difficulty of the bot who is about to play
+function findBestPrefix(word, diff, round, usedSet, isForPlayer){
+  var maxPfx = getPrefixLength(diff, round);
   var targetLenFilter = null;
-  if(diff === 'easy') {
-    targetLenFilter = function(w) { return w.length === 2; };
-  } else if(diff === 'medium') {
-    targetLenFilter = function(w) { return w.length === 3; };
-  } else if(diff === 'hard') {
-    targetLenFilter = function(w) { return w.length === 4; };
-  } else if(diff === 'extreme') {
-    targetLenFilter = function(w) { return w.length === 4 || w.length === 5; };
+  
+  // Force the bot to only consider words of specific lengths based on its difficulty
+  if (!isForPlayer) {
+    if(diff === 'easy') targetLenFilter = function(w) { return w.length === 2; };
+    else if(diff === 'medium') targetLenFilter = function(w) { return w.length === 3; };
+    else if(diff === 'hard') targetLenFilter = function(w) { return w.length === 4; };
+    else if(diff === 'extreme') targetLenFilter = function(w) { return w.length === 4 || w.length === 5; };
   }
 
+  // Look for the longest possible prefix
   for(var len=Math.min(maxPfx,word.length);len>=1;len--){
     var pfx=word.slice(-len);
-    // Find all matching candidate words starting with this prefix
     var cands = Dict.findWords(pfx, usedSet);
+    
+    // If calculating the bot's turn, filter the candidates
     if (targetLenFilter) {
       cands = cands.filter(targetLenFilter);
     }
+    
     var count = cands.length;
 
     if(count > 0) {
-      // Dynamic safe validation using filtered count based on difficulty
+      // Constraints for handing the prefix to the HUMAN PLAYER
+      if (isForPlayer) {
+          if (len >= 3 && count < 1) continue; // 3+ letters: Must have at least 1 valid answer to not softlock
+          if (len === 2 && count < 2) continue; // 2 letters: Should have at least a couple options
+          if (len === 1 && count < 5) continue; // 1 letter: Must have many options
+          return pfx; // Give the player the prefix!
+      }
+      
+      // Constraints for handing the prefix to the BOT
       if(diff === 'easy') {
-        if(len > 1) continue; // Easy bots should NEVER hand a 2+ letter prefix to a player
-        if(count < 2) continue; // 1-letter prefix must have at least 2 remaining 2-letter options
+        if(len > 1) continue; 
+        if(count < 2) continue; 
       } else if(diff === 'medium') {
-        if(len === 2 && count < 2) continue; // 2-letter prefix must have at least 2 remaining 3-letter options
-        if(len === 1 && count < 10) continue; // 1-letter prefix must have at least 10 remaining 3-letter options
+        if(len === 2 && count < 2) continue; 
+        if(len === 1 && count < 10) continue; 
       } else if(diff === 'hard') {
-        if(len === 3 && count < 2) continue; // 3-letter prefix must have at least 2 remaining 4-letter options
-        if(len === 2 && count < 5) continue; // 2-letter prefix must have at least 5 remaining 4-letter options
-        if(len === 1 && count < 15) continue; // 1-letter prefix must have at least 15 remaining 4-letter options
+        if(len >= 3 && count < 2) continue; 
+        if(len === 2 && count < 5) continue; 
+        if(len === 1 && count < 15) continue; 
       } else if(diff === 'extreme') {
-        if(len === 3 && count < 1) continue; // 3-letter prefix must have at least 1 remaining option
-        if(len === 2 && count < 2) continue; // 2-letter prefix must have at least 2 remaining options
-        if(len === 1 && count < 5) continue; // 1-letter prefix must have at least 5 remaining options
+        if(len >= 3 && count < 1) continue; 
+        if(len === 2 && count < 2) continue; 
+        if(len === 1 && count < 5) continue; 
       }
       return pfx;
     }
   }
-  // Total fallback: pick a random letter from the top easy endings so the player is never stuck with a bad random letter!
+  
+  // Total fallback so the game never crashes
   var easyEndings = Dict.getEasyEndings();
   if (easyEndings && easyEndings.length > 0) {
     return easyEndings[Math.floor(Math.random() * easyEndings.length)];
